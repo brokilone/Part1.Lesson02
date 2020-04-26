@@ -15,18 +15,18 @@ import java.util.List;
  */
 public class ExceptionDemo {
 
-    static List <Integer> list = new ArrayList<>();
-    static int n = 0;
-    static int i = 0;
+    static List <Integer> list = new ArrayList<>();//список для сохранения генерируемых чисел
+    static int n = 0;//хранит количество чисел, которое будет сгенерировано
+
 
     /**
      * Главный метод, иллюстрирующий работу программы.
      * @param args
      */
     public static void main(String[] args) {
-        n = setNbyUserInput();
-        generateAndStore(n);
-        calculateSqrt(list);
+        n = setNbyUserInput(); // считываем кол-во с клавиатуры
+        generateAndStore(n); //генерируем n  чисел и сохраняем в list
+        calculateSqrt(list); //вычисляем квадратный корень из каждого из n чисел
     }
 
     /**
@@ -52,6 +52,7 @@ public class ExceptionDemo {
      * @param amount - количество генерируемых чисел
      */
     static void generateAndStore(int amount) {
+        int i = 0;
         while (i < amount) {
             int k = (int) (Math.random()*(200+1)) - 100;
             list.add(k);
@@ -70,7 +71,7 @@ public class ExceptionDemo {
         for (Integer k : list) {
             try {
                 if (k < 0) {
-                    throw new Exception("Невозможно извлечь корень из отрицательного числа!");
+                    throw new Exception(String.format("Невозможно извлечь корень из отрицательного числа: %d", k));
                 }
                 Double q = Math.sqrt(k);
                 if (q.intValue()*q.intValue() == k) {

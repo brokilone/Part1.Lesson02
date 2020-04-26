@@ -17,8 +17,11 @@ public class HelloWorld {
      * @param args
      */
     public static void main(String[] args) {
-        //testArrayIndexOutOfBoundExc(numbers);
+        //моделирует выброс исключения ArrayIndexOutOfBoundsException
+        testArrayIndexOutOfBoundExc(numbers);
+        //моделирует выброс исключения NullPointerException
         //testNPE(testString,"");
+        //моделирует выброс исключения ArithmeticException
         //testAnotherException();
     }
 
