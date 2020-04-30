@@ -9,22 +9,23 @@ import java.util.Random;
  * created by Ksenya_Ushakova at 25.04.2020
  */
  class Generator {
-     //вспомогательный массив мужских имен
-    private static String[] maleNames = {"Anton", "Andrew", "Anatoliy", "Alex", "Boris", "Ben", "Bob", "Vladimir",
-                                        "Valeriy", "Viktor", "Vyacheslav", "Gleb", "Georgiy", "Denis", "Damir",
-                                        "Dmitriy", "Egor", "Evgeniy", "Igor", "Ilya", "Innokentiy", "Konstantin",
-                                        "Leonard", "Leonid", "Michael", "Mark", "Mike", "Nikita", "Nikolay", "Oleg",
-                                        "Petr", "Piter", "Pavel", "Robert", "Radomir", "Stas", "Sergey", "Timur",
-                                        "Timofey", "Tamir", "Fedor", "Eduard", "Yaroslav", "Yakov"};
-
-    //вспомогательный массив женских имен
-    private static String [] femaleNames = {"Anna", "Alisa", "Alberta", "Alla", "Barbara", "Bella", "Valentina",
-                                            "Viktorya", "Vera", "Galina", "Gella", "Diana", "Darina", "Darya",
-                                            "Ekaterina", "Elena", "Eva", "Esenya", "Irina", "Iraida", "Isabella",
-                                            "Kseniya", "Karina", "Kira", "Kristina", "Larisa", "Lisa","Marina",
-                                            "Natalya", "Nina", "Nely", "Olesya", "Oksana", "Olga", "Polina", "Paula",
-                                            "Rosa", "Rimma", "Rada", "Ramina", "Tamara", "Tatyana", "Ulyana",
-                                            "Elvira", "Yana"};
+    /**
+     * Генерация случайной строки
+     * @param random - генератор псевдослучайных чисел
+     * @param characters - строка символов, используемых для генерации строки
+     * @param length - длина генерируемой строки
+     * @return возвращает строку
+     */
+     private static String generateString(Random random, String characters, int length)
+     {
+         char[] name = new char[length];
+         name[0] = Character.toUpperCase(characters.charAt(random.nextInt(characters.length())));
+         for (int i = 1; i < length; i++)
+         {
+             name[i] = characters.charAt(random.nextInt(characters.length()));
+         }
+         return new String(name);
+     }
 
     /**
      * Создание объекта класса Person  с рандомными именем, возрастом, полом
@@ -33,9 +34,11 @@ import java.util.Random;
     public static Person generateOnePerson() {
         Random random = new Random();
         boolean isMale = random.nextBoolean();
+        String characters = "abcdefghijklmnopqrstuvwxyz";
+        String name = generateString(random, characters, random.nextInt(5)+3);
         if (isMale) {
-            return Person.createMan(maleNames[random.nextInt(maleNames.length)], random.nextInt(101));
+            return new Person(name, random.nextInt(101), Sex.MAN);
         }
-        return Person.createWoman(femaleNames[random.nextInt(femaleNames.length)], random.nextInt(101));
+        return new Person(name, random.nextInt(101), Sex.WOMAN);
     }
 }

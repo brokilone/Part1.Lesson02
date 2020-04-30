@@ -14,18 +14,14 @@ import java.util.List;
  * created by Ksenya_Ushakova at 24.04.2020
  */
 public class ExceptionDemo {
-
-    static List <Integer> list = new ArrayList<>();//список для сохранения генерируемых чисел
-    static int n = 0;//хранит количество чисел, которое будет сгенерировано
-
-
     /**
      * Главный метод, иллюстрирующий работу программы.
      * @param args
      */
     public static void main(String[] args) {
-        n = setNbyUserInput(); // считываем кол-во с клавиатуры
-        generateAndStore(n); //генерируем n  чисел и сохраняем в list
+        List <Integer> list = new ArrayList<>();
+        int n = setNbyUserInput(); // считываем кол-во с клавиатуры
+        generateAndStore(n, list); //генерируем n  чисел и сохраняем в list
         calculateSqrt(list); //вычисляем квадратный корень из каждого из n чисел
     }
 
@@ -35,6 +31,7 @@ public class ExceptionDemo {
      * @return возвращает переменную n, в которую записывается введенное пользователем число
      */
     static int setNbyUserInput () {
+        int n = 0;
         System.out.println("Введите число: ");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))){
             n = Integer.valueOf(reader.readLine());
@@ -51,7 +48,7 @@ public class ExceptionDemo {
      * и сохраняет их в список;
      * @param amount - количество генерируемых чисел
      */
-    static void generateAndStore(int amount) {
+    static void generateAndStore(int amount, List<Integer> list) {
         int i = 0;
         while (i < amount) {
             int k = (int) (Math.random()*(200+1)) - 100;
@@ -73,8 +70,8 @@ public class ExceptionDemo {
                 if (k < 0) {
                     throw new Exception(String.format("Невозможно извлечь корень из отрицательного числа: %d", k));
                 }
-                Double q = Math.sqrt(k);
-                if (q.intValue()*q.intValue() == k) {
+                double q = Math.sqrt(k);
+                if ((int)q * (int) q == k) {
                     System.out.println(k);
                 }
             } catch (Exception e) {
