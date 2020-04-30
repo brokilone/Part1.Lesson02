@@ -23,14 +23,14 @@ public class HelloWorld {
             testArrayIndexOutOfBoundExc(numbers);
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
-            try {
-                //моделирует выброс исключения NullPointerException
-                testNPE(testString, "");
-            } catch (NullPointerException e1) {
-                e1.printStackTrace();
-                //моделирует выброс исключения ArithmeticException
-                testAnotherException();
-            }
+        }
+        try {
+            //моделирует выброс исключения NullPointerException
+            testNPE(testString, "");
+        } catch (NullPointerException e1) {
+            e1.printStackTrace();
+            //моделирует выброс исключения ArithmeticException
+            testAnotherException();
         }
     }
 

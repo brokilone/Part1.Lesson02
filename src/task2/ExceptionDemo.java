@@ -19,9 +19,8 @@ public class ExceptionDemo {
      * @param args
      */
     public static void main(String[] args) {
-        List <Integer> list = new ArrayList<>();
         int n = setNbyUserInput(); // считываем кол-во с клавиатуры
-        generateAndStore(n, list); //генерируем n  чисел и сохраняем в list
+        List <Integer> list = generateAndStore(n); //генерируем n  чисел и сохраняем в list
         calculateSqrt(list); //вычисляем квадратный корень из каждого из n чисел
     }
 
@@ -48,13 +47,15 @@ public class ExceptionDemo {
      * и сохраняет их в список;
      * @param amount - количество генерируемых чисел
      */
-    static void generateAndStore(int amount, List<Integer> list) {
+    static List<Integer> generateAndStore(int amount) {
+        List<Integer> list = new ArrayList<>();
         int i = 0;
         while (i < amount) {
             int k = (int) (Math.random()*(200+1)) - 100;
             list.add(k);
             i++;
         }
+        return list;
     }
 
     /**
