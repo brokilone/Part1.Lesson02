@@ -29,8 +29,9 @@ public class Main {
      */
     public static void main(String[] args) {
         Date before = new Date(); //сохраняем текущие дату и время до сортировки
-        inSort.makeSort(allPersons, 0, allPersons.length - 1);
-        //qSort.makeSort(allPersons, 0, allPersons.length - 1);
+        //inSort.makeSort(allPersons, 0, allPersons.length - 1);
+        // опять же закомментированный код. Подумайте как этого избежать с помощью полиморфизма.
+        qSort.makeSort(allPersons, 0, allPersons.length - 1);
         Date after = new Date(); //сохраняем текущие дату и время после сортировки
 
         //выводим в консоль отсортированный массив

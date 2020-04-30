@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class ExceptionDemo {
 
+    // старайтесь максимально ограничивать область видимости переменных. В данном случае n вам нужна только в main,
+    // а list вы и так передаёте в calculateSqrt в качестве параметра
     static List <Integer> list = new ArrayList<>();//список для сохранения генерируемых чисел
     static int n = 0;//хранит количество чисел, которое будет сгенерировано
 
@@ -73,6 +75,7 @@ public class ExceptionDemo {
                 if (k < 0) {
                     throw new Exception(String.format("Невозможно извлечь корень из отрицательного числа: %d", k));
                 }
+                // тут можно использовать примитивный тип double. Не стоит использовать обёртку без необходимости
                 Double q = Math.sqrt(k);
                 if (q.intValue()*q.intValue() == k) {
                     System.out.println(k);

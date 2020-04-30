@@ -14,10 +14,15 @@ public class Person implements Comparable {
         if (age >= 0 && age <= 100) {
             this.age = age;
         } else {
+            // Если какие-то данные не приемлемы лучше ругаться исключением, чем заменять их
+            // иначе это не очевидное поведение
             this.age = 0;
         }
         this.sex = sex;
     }
+
+    // статические методы - зло :)
+    // на самом деле нет ни ожной причины, чтобы хранить createMan и createWoman здесь и раздувать класс
 
     /**
      * Создаем мужчину
@@ -55,6 +60,7 @@ public class Person implements Comparable {
      *
      * @param name принимает в качестве аргумента строку - имя объекта
      */
+    // мёртвый код
     public void setName(String name) {
         this.name = name;
     }
@@ -120,17 +126,20 @@ public class Person implements Comparable {
     @Override
     public int compareTo(Object o) {
         Person p = (Person) o;
+        // ненужная переменная
         String s = "";
         int i = this.getSex().compareTo(p.getSex());
         if (i != 0) return i;
         int j = new Integer(this.getAge()).compareTo(new Integer(p.getAge()));
         if (j != 0) return -j;
         int k = this.getName().compareTo(p.getName());
+        // j == 0 всегда true
         if (k == 0 && j == 0) {
             try {
                 throw new ComparePersonException(String.format("Warning: duplicate persons: name - %s, age - %d",
                         this.getName(), this.getAge()));
             } catch (ComparePersonException e) {
+                // вы выбрасываете исключение, но тут же его гасите. Конечно вы логируете проблему и это хорошо, но нужно ли вам для этого исключение в таком случае?
                 System.err.println(e.getMessage());
                 return k;
             }

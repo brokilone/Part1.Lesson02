@@ -17,12 +17,13 @@ public class HelloWorld {
      * @param args
      */
     public static void main(String[] args) {
+        // закомментированный код - дело не благородное. Подумайте, как можно его избежать.
         //моделирует выброс исключения ArrayIndexOutOfBoundsException
-        testArrayIndexOutOfBoundExc(numbers);
+        //testArrayIndexOutOfBoundExc(numbers);
         //моделирует выброс исключения NullPointerException
         //testNPE(testString,"");
         //моделирует выброс исключения ArithmeticException
-        //testAnotherException();
+        testAnotherException();
     }
 
     /**
