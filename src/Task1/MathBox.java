@@ -14,7 +14,7 @@ public class MathBox {
     /**
      * коллекция для хранения элементов массива, полученного на вход конструктора
      */
-    Set <Number> set = new HashSet<>();
+    private Set <Number> set = new HashSet<>();
 
     /**
      * конструктор принимает на вход массив объектов Number и раскладывает их в HashSet
@@ -26,10 +26,10 @@ public class MathBox {
 
     /**
      * Метод для получения суммы элементов коллекции
-     * @return возвращает сумму всех элементов коллекции
+     * @return возвращает сумму значений doublevalue всех элементов коллекции
      */
-    public Double summator() {
-        Double sum = 0.0;
+    public double summator() {
+        double sum = 0.0;
         for (Number number : set) {
             sum += number.doubleValue();
         }
