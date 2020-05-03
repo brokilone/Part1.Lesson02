@@ -24,6 +24,9 @@ public class MathBox {
         set.addAll(Arrays.asList(array));
     }
 
+    //НАСТАВНИК
+    // возьмите себе в привычку всегда при введении коллекции параметризировать её конкретным типом
+    // это позволит избежать многих багов
     /**
      * приватный конструктор, принимает на вход коллекцию Set и сохраняет ссылку на нее
      * @param set
@@ -116,6 +119,8 @@ public class MathBox {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
+        //НАСТАВНИК
+        // в принципе это условие не обязательное и требует дополнительных вычислений
         if (hashCode() != obj.hashCode()) return false;
 
         MathBox box = (MathBox) obj;

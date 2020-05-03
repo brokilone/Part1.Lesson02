@@ -39,6 +39,8 @@ public class MathBoxGenDemo {
         mathBox.splitter(5.0);
         System.out.println("From map: " + map.get(mathBox));
 
+        //НАСТАВНИК
+        // подумайте как этого избежать
         MathBox mathBox4 = (MathBox) mathBox.addObject(5); //попытка положить ObjectBox в MathBox приведет к ClassCastEx
 
 
