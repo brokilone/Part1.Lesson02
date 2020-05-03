@@ -1,6 +1,9 @@
 package task3;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Main
  * класс демонструрует работу класса MathBox, унаследованного от типизированного класса ObjectBox
@@ -14,21 +17,30 @@ public class MathBoxGenDemo {
     public static void main(String[] args) {
         Number[] nums = {1,2,3,4};
         ObjectBox<Number> box = new ObjectBox<>(nums);
-        box.addObject(5);
-        box.deleteObject(2);
+        ObjectBox<Number> box1 = box.addObject(5);
+        ObjectBox<Number> box2 = box.deleteObject(2);
         System.out.println("ObjectBox: \n" + box.dump());
+        System.out.println("ObjectBox1: \n" + box1.dump());
+        System.out.println("ObjectBox2: \n" + box2.dump());
 
-        MathBox mathBox = new MathBox(new Number[0]);
-        mathBox.addObject(5);
-        mathBox.addObject(7.0);
-        mathBox.addObject(15);
-        System.out.println("MathBox: ");
+        MathBox mathBox = new MathBox(nums);
+        System.out.println("MathBox: \n" + mathBox.dump());
+
         System.out.println("Summator :\n" + mathBox.summator());
-        mathBox.splitter(2);
-        System.out.println("Divide by 2 \n" + mathBox.dump());
+        MathBox mathBox2 = mathBox.splitter(2);
+        System.out.println("Divide by 2 \n" + mathBox2.dump());
 
+        MathBox mathBox3 = mathBox.integerRemover(1);
+        System.out.println("Remove 1: " + mathBox3.dump());
 
-        mathBox = (MathBox) box; //попытка закастить и положить ObjectBox в MathBox приведет к ClassCatException
+        Map<MathBox, Integer> map = new HashMap<>();
+        map.put(mathBox, 1);
+        map.put(mathBox2, 2);
+        mathBox.splitter(5.0);
+        System.out.println("From map: " + map.get(mathBox));
+
+        MathBox mathBox4 = (MathBox) mathBox.addObject(5); //попытка положить ObjectBox в MathBox приведет к ClassCastEx
+
 
 
 

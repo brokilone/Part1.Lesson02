@@ -25,6 +25,14 @@ public class MathBox {
     }
 
     /**
+     * приватный конструктор, принимает на вход коллекцию Set и сохраняет ссылку на нее
+     * @param set
+     */
+    private MathBox(Set set) {
+        this.set = set;
+    }
+
+    /**
      * Метод для получения суммы элементов коллекции
      * @return возвращает сумму значений doublevalue всех элементов коллекции
      */
@@ -37,32 +45,40 @@ public class MathBox {
     }
 
     /**
-     * Метод выполняет поочередное деление всех хранящихся в объекте элементов на делитель, являющийся аргументом метода.
-     * Хранящиеся в объекте данные полностью заменяются результатами деления.
-     * @param divider - делитель, участвующий в операциях деления
+     * Метод производит деление каждого элемента коллекции на делитель, пришедший в параметрах
+     * @param divider - делитель, применяемый к каждому элементу коллекции
+     * @return новый объект MathBox с обновленной коллекцией
      */
-    public void splitter(Number divider) {
+    public MathBox splitter(Number divider) {
         Iterator<Number> iterator = set.iterator();
-        Set copy = new HashSet();
+
+        Set<Number> copy = new HashSet();
         while (iterator.hasNext()){
             Number n = iterator.next();
             copy.add(n.doubleValue()/divider.doubleValue());
         }
-
-        set = copy;
-
+        /*можно сделать новый массив Number и сохранять при переборе туда измененные элементы старой
+         *коллекции, а потом передать в конструктор. Но в задании нет явного запрета на кол-во конструкторов,
+         *поэтому сделан еще один конструктор*/
+        return new MathBox(copy);
     }
 
     /**
      * Метод удаляет из коллекции элемент, совпадающий по значению с поступившим на вход Integer.
      * Если такого значения нет, коллекция не изменяется
      * @param value - значение типа Integer
+     * @return Mathbox - возвращает новый объект с обновленной коллекцией, либо возвращает текущий объект, если изменения
+     * отсутствуют
      */
-    public void integerRemover(Integer value) {
+    public MathBox integerRemover(Integer value) {
         boolean isPresent = set.contains(value);
+
         if (isPresent) {
-            set.remove(value);
+            Set<Number> copy = new HashSet(set);
+            copy.remove(value);
+            return new MathBox(copy);
         }
+        return this;
     }
 
     /**

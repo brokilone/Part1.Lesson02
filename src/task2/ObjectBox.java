@@ -13,33 +13,48 @@ public class ObjectBox {
     /**
      * коллекция для хранения элементов массива, полученного на вход конструктора
      */
-    Set set = new HashSet();
+    protected Set set = new HashSet();
 
     /**
      * конструктор принимает на вход массив объектов Object и раскладывает их в HashSet
      * @param objects
      */
-    ObjectBox (Object[] objects) {
+    public ObjectBox (Object[] objects) {
         set.addAll(Arrays.asList(objects));
     }
 
     /**
-     * метод принимает на вход объект и добавляет его в коллекцию
-     * @param o - добавляемый объект
+     * приватный конструктор, принимает на вход коллекцию Set и сохраняет ссылку на нее
+     * @param set
      */
-    public void addObject(Object o) {
-        set.add(o);
+    protected ObjectBox (Set set) {
+        this.set = set;
+    }
+    /**
+     * метод принимает на вход объект и добавляет его в копию коллекции
+     * @param o - добавляемый объект
+     * @return возвращает новый объект ObjectBox с обновленной коллекцией
+     */
+    public ObjectBox addObject(Object o) {
+        Set copy = new HashSet(set);
+        copy.add(o);
+        return new ObjectBox(copy);
     }
 
     /**
-     * метод принимает на вход объект и, если такой объект есть в коллекции, удаляет его
+     * метод принимает на вход объект и, если такой объект есть в коллекции, создает копию коллекции,
+     * удаляет элемент в копии и возвращает новый объект с обновленной коллекцией
      * @param o - удаляемый объект
+     * @return новый объект ObjectBox с обновленной коллекцией, либо текущий объект, если изменения не производились
      */
-    public void deleteObject(Object o) {
+    public ObjectBox deleteObject(Object o) {
         boolean isPresent = set.contains(o);
         if (isPresent) {
-            set.remove(o);
+            Set copy = new HashSet(set);
+            copy.remove(o);
+            return new ObjectBox(copy);
         }
+        return this;
     }
 
     /**

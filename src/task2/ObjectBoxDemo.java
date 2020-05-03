@@ -14,12 +14,11 @@ public class ObjectBoxDemo {
         Object[] objects = {"one", "two", "three"};
         ObjectBox box = new ObjectBox(objects);
 
-        box.addObject("four");
+        ObjectBox box2 = box.addObject("four");
 
-        box.deleteObject("one");
-
-        box.deleteObject(15);
+        box2 = box2.deleteObject("one");
 
         System.out.println(box.dump());
+        System.out.println(box2.dump());
     }
 }

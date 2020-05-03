@@ -21,21 +21,21 @@ public class MathBoxDemo {
 
         System.out.println("Summator: \n" + box.summator());
 
-        box.integerRemover(51);
-        System.out.println("Remove value 51: \n" + box);
+        MathBox box2 = box.integerRemover(51);
+        System.out.println("Remove value 51: \n" + box2);
 
-        box.splitter(2);
+        MathBox box3 = box.splitter(2);
         System.out.println("Splitter: \n" + box);
 
         Number[] nums2 = {4,8,51,11,-4,42,11};
-        MathBox box2 = new MathBox(nums2);
-        System.out.println("Box equals box2: " + box.equals(box2));
+        MathBox box4 = new MathBox(nums2);
+        System.out.println("Box equals box4: " + box.equals(box4));
 
         System.out.println("Add Mathbox objects to Map");
         Map<MathBox, Integer> map = new HashMap<>();
         map.put(box, 1);
         map.put(box2, 2);
-
+        box.splitter(5.0);//box не изменится, метод вернет новый объект, но в демо целях мы не сохраняем ссылку на него
         System.out.println(map.get(box));
     }
 }

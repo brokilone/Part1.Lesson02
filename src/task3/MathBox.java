@@ -1,6 +1,5 @@
 package task3;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -23,6 +22,14 @@ public class MathBox extends ObjectBox<Number>{
     }
 
     /**
+     * приватный конструктор, принимает на вход коллекцию Set и сохраняет ссылку на нее
+     * @param set
+     */
+    private MathBox(Set set) {
+        super(set);
+    }
+
+    /**
      * Метод для получения суммы элементов коллекции родителя
      * @return возвращает сумму всех элементов коллекции родителя
      */
@@ -35,20 +42,39 @@ public class MathBox extends ObjectBox<Number>{
     }
 
     /**
-     * Метод выполняет поочередное деление всех хранящихся в коллекции элементов на делитель, являющийся аргументом метода.
-     * Хранящиеся в объекте данные полностью заменяются результатами деления.
-     * @param divider - делитель, участвующий в операциях деления
+     * Метод производит деление каждого элемента коллекции на делитель, пришедший в параметрах
+     * @param divider - делитель, применяемый к каждому элементу коллекции
+     * @return новый объект MathBox с обновленной коллекцией
      */
-    public void splitter(Number divider) {
+    public MathBox splitter(Number divider) {
         Iterator<Number> iterator = super.set.iterator();
-        Set copy = new HashSet();
+        Set<Number> copy = new HashSet();
         while (iterator.hasNext()){
             Number n = iterator.next();
             copy.add(n.doubleValue()/divider.doubleValue());
         }
+        return new MathBox(copy);
 
-        set = copy;
+    }
 
+    /**
+     * Метод удаляет из коллекции элемент, совпадающий по значению с поступившим на вход Integer.
+     * Если такого значения нет, коллекция не изменяется
+     * @param value - значение типа Integer
+     * @return Mathbox - возвращает новый объект с обновленной коллекцией, либо возвращает текущий объект, если изменения
+     * отсутствуют
+     */
+    public MathBox integerRemover(Integer value) {
+        boolean isPresent = set.contains(value);
+        /*здесь также можно было новую коллекцию привести к массиву, закастить и передать в публичный конструктор,
+         * но решила работать через приватный конструктор, принимающий Set
+         */
+        if (isPresent) {
+            Set<Number> copy = new HashSet(set);
+            copy.remove(value);
+            return new MathBox(copy);
+        }
+        return this;
     }
 
 }

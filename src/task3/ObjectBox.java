@@ -13,32 +13,48 @@ public class ObjectBox<T>{
     /**
      * типизированная коллекция для хранения элементов массива, полученного на вход конструктора
      */
-    Set<T> set = new HashSet();
+    protected Set<T> set = new HashSet();
 
     /**
      * конструктор принимает на вход параметризованный массив и раскладывает их в HashSet
      * @param objects
      */
-    ObjectBox (T[] objects) {
+    public ObjectBox (T[] objects) {
         set.addAll(Arrays.asList(objects));
     }
 
     /**
-     * метод принимает на вход объект типа и добавляет его в коллекцию
-     * @param o - добавляемый объект
+     * приватный конструктор, принимает на вход коллекцию Set и сохраняет ссылку на нее
+     * @param set
      */
-    public void addObject(T o) {
-        set.add(o);
+    protected ObjectBox (Set<T> set) {
+        this.set = set;
+    }
+
+    /**
+     * метод принимает на вход объект типа и добавляет его в копию коллекции
+     * @param o - добавляемый объект
+     * @return возвращает новый объект ObjectBox с обновленной коллекцией
+     */
+    public ObjectBox<T> addObject(T o) {
+        Set<T> copy = new HashSet(set);
+        copy.add(o);
+        return new ObjectBox(copy);
     }
     /**
-     * метод принимает на вход объект типа и, если такой объект есть в коллекции, удаляет его
+     * метод принимает на вход объект типа и, если такой объект есть в коллекции, создает копию коллекции,
+     * удаляет элемент в копии и возвращает новый объект с обновленной коллекцией
      * @param o - удаляемый объект
+     * @return новый объект ObjectBox с обновленной коллекцией, либо текущий объект, если изменения не производились
      */
-    public void deleteObject(T o) {
+    public ObjectBox<T> deleteObject(T o) {
         boolean isPresent = set.contains(o);
         if (isPresent) {
-            set.remove(o);
+            Set<T> copy = new HashSet<>(set);
+            copy.remove(o);
+            return new ObjectBox<T>(copy);
         }
+        return this;
     }
 
     /**
