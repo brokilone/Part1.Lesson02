@@ -25,7 +25,7 @@ public class MathBox extends ObjectBox<Number>{
      * приватный конструктор, принимает на вход коллекцию Set и сохраняет ссылку на нее
      * @param set
      */
-    private MathBox(Set set) {
+    private MathBox(Set<Number> set) {
         super(set);
     }
 
@@ -35,7 +35,7 @@ public class MathBox extends ObjectBox<Number>{
      */
     public double summator() {
         double sum = 0.0;
-        for (Number n : super.set) {
+        for (Number n : super.getSet()) {
             sum += n.doubleValue();
         }
         return sum;
@@ -47,7 +47,7 @@ public class MathBox extends ObjectBox<Number>{
      * @return новый объект MathBox с обновленной коллекцией
      */
     public MathBox splitter(Number divider) {
-        Iterator<Number> iterator = super.set.iterator();
+        Iterator<Number> iterator = super.getSet().iterator();
         Set<Number> copy = new HashSet();
         while (iterator.hasNext()){
             Number n = iterator.next();
@@ -65,16 +65,43 @@ public class MathBox extends ObjectBox<Number>{
      * отсутствуют
      */
     public MathBox integerRemover(Integer value) {
-        boolean isPresent = set.contains(value);
+        boolean isPresent = super.getSet().contains(value);
         /*здесь также можно было новую коллекцию привести к массиву, закастить и передать в публичный конструктор,
          * но решила работать через приватный конструктор, принимающий Set
          */
         if (isPresent) {
-            Set<Number> copy = new HashSet(set);
+            Set<Number> copy = new HashSet(super.getSet());
             copy.remove(value);
             return new MathBox(copy);
         }
         return this;
     }
 
+    /**
+     * Переопределенный метод для добавления элемента в коллекцию
+     * @param o - добавляемый объект
+     * @return возвращает новый объект MathBox
+     */
+    @Override
+    public MathBox addObject(Number o) {
+        Set<Number> copy = new HashSet(super.getSet());
+        copy.add(o);
+        return new MathBox(copy);
+    }
+
+    /**
+     * Переопределенный метод для удаления элемента из коллекции
+     * @param o - удаляемый объект
+     * @return возвращает новый объект MathBox или текущий объект, если изменения не вносились
+     */
+    @Override
+    public MathBox deleteObject(Number o) {
+        boolean isPresent = super.getSet().contains(o);
+        if (isPresent) {
+            Set<Number> copy = new HashSet<>(super.getSet());
+            copy.remove(o);
+            return new MathBox(copy);
+        }
+        return this;
+    }
 }

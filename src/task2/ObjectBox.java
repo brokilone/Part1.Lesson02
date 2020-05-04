@@ -15,7 +15,7 @@ public class ObjectBox {
     /**
      * коллекция для хранения элементов массива, полученного на вход конструктора
      */
-    protected Set set = new HashSet();
+    private Set set = new HashSet();
 
     /**
      * конструктор принимает на вход массив объектов Object и раскладывает их в HashSet

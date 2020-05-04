@@ -13,7 +13,7 @@ public class ObjectBox<T>{
     /**
      * типизированная коллекция для хранения элементов массива, полученного на вход конструктора
      */
-    protected Set<T> set = new HashSet();
+    private Set<T> set = new HashSet();
 
     /**
      * конструктор принимает на вход параметризованный массив и раскладывает их в HashSet
@@ -58,6 +58,14 @@ public class ObjectBox<T>{
     }
 
     /**
+     * Геттер для использования внутренней коллекции классами-потомками
+     * @return возвращает set
+     */
+    protected Set<T> getSet() {
+        return set;
+    }
+
+    /**
      * Метод выводит содержимое коллекции в строку
      * @return String
      */
@@ -78,7 +86,6 @@ public class ObjectBox<T>{
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        if (hashCode() != obj.hashCode()) return false;
 
         ObjectBox box = (ObjectBox) obj;
         if (set.size() != box.set.size()) return false;

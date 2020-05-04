@@ -41,7 +41,7 @@ public class MathBoxGenDemo {
 
         //НАСТАВНИК
         // подумайте как этого избежать
-        MathBox mathBox4 = (MathBox) mathBox.addObject(5); //попытка положить ObjectBox в MathBox приведет к ClassCastEx
+        MathBox mathBox4 = mathBox.addObject(5); //переопределили методы addObject и deleteObject у Mathbox
 
 
 
