@@ -13,7 +13,7 @@ public class ObjectBox<T>{
     /**
      * типизированная коллекция для хранения элементов массива, полученного на вход конструктора
      */
-    private Set<T> set = new HashSet();
+    private Set<T> set = new HashSet<>();
 
     /**
      * конструктор принимает на вход параметризованный массив и раскладывает их в HashSet
@@ -37,7 +37,7 @@ public class ObjectBox<T>{
      * @return возвращает новый объект ObjectBox с обновленной коллекцией
      */
     public ObjectBox<T> addObject(T o) {
-        Set<T> copy = new HashSet(set);
+        Set<T> copy = new HashSet<>(set);
         copy.add(o);
         return new ObjectBox(copy);
     }

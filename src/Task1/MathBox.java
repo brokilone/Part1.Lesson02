@@ -52,7 +52,7 @@ public class MathBox {
     public MathBox splitter(Number divider) {
         Iterator<Number> iterator = set.iterator();
 
-        Set<Number> copy = new HashSet();
+        Set<Number> copy = new HashSet<>();
         while (iterator.hasNext()){
             Number n = iterator.next();
             copy.add(n.doubleValue()/divider.doubleValue());
@@ -74,7 +74,7 @@ public class MathBox {
         boolean isPresent = set.contains(value);
 
         if (isPresent) {
-            Set<Number> copy = new HashSet(set);
+            Set<Number> copy = new HashSet<>(set);
             copy.remove(value);
             return new MathBox(copy);
         }

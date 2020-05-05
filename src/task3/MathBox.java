@@ -30,6 +30,15 @@ public class MathBox extends ObjectBox<Number>{
     }
 
     /**
+     * еще один конструктор для получения MathBox из ObjectBox параметризированного по Number
+     * @param box объект ObjectBox
+     * @param set коллекция Number
+     */
+    private MathBox (ObjectBox<Number> box, Set<Number> set){
+        super(set);
+    }
+
+    /**
      * Метод для получения суммы элементов коллекции родителя
      * @return возвращает сумму всех элементов коллекции родителя
      */
@@ -48,7 +57,7 @@ public class MathBox extends ObjectBox<Number>{
      */
     public MathBox splitter(Number divider) {
         Iterator<Number> iterator = super.getSet().iterator();
-        Set<Number> copy = new HashSet();
+        Set<Number> copy = new HashSet<>();
         while (iterator.hasNext()){
             Number n = iterator.next();
             copy.add(n.doubleValue()/divider.doubleValue());
@@ -70,7 +79,7 @@ public class MathBox extends ObjectBox<Number>{
          * но решила работать через приватный конструктор, принимающий Set
          */
         if (isPresent) {
-            Set<Number> copy = new HashSet(super.getSet());
+            Set<Number> copy = new HashSet<>(super.getSet());
             copy.remove(value);
             return new MathBox(copy);
         }
@@ -84,24 +93,18 @@ public class MathBox extends ObjectBox<Number>{
      */
     @Override
     public MathBox addObject(Number o) {
-        Set<Number> copy = new HashSet(super.getSet());
-        copy.add(o);
-        return new MathBox(copy);
+        ObjectBox<Number> box = super.addObject(o);
+        return new MathBox(box,box.getSet());
     }
 
     /**
      * Переопределенный метод для удаления элемента из коллекции
      * @param o - удаляемый объект
-     * @return возвращает новый объект MathBox или текущий объект, если изменения не вносились
+     * @return возвращает новый объект MathBox
      */
     @Override
     public MathBox deleteObject(Number o) {
-        boolean isPresent = super.getSet().contains(o);
-        if (isPresent) {
-            Set<Number> copy = new HashSet<>(super.getSet());
-            copy.remove(o);
-            return new MathBox(copy);
-        }
-        return this;
+        ObjectBox<Number> box = super.deleteObject(o);
+        return new MathBox(box,box.getSet());
     }
 }
