@@ -1,35 +1,24 @@
-package Task05_1;
+package Task05_2;
 
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Pet - класс описывает объект - домашнее животное
+ * Pet - класс описывает объект - домашнее животное, хранимый в картотеке
  * created by Ksenya_Ushakova at 30.04.2020
  */
-public class Pet {
+public class Pet extends AddPetRequest{
     private UUID uuid;
-    private final String name;
-    private int age;
-    private Person owner;
-    private double weight;
-
 
     /**
-     * публичный конструктор
-     * @param name имя
-     * @param age возраст
-     * @param owner хозяин
-     * @see Person
-     * @param weight вес
+     * публичный конструктор, используется для создания сущности Pet в картотеке на основании запроса
+     * @see AddPetRequest
+     * @param request
      */
-    public Pet(String name, int age, Person owner, double weight) {
-        this.name = name;
-        this.age = age;
-        this.owner = owner;
-        this.weight = weight;
+    public Pet(AddPetRequest request) {
+        super(request.getName(), request.getAge(), request.getOwner(), request.getWeight());
+        this.uuid = UUID.randomUUID();
     }
-
 
     /**
      * публичный геттер
@@ -47,7 +36,7 @@ public class Pet {
      * @return String - имя объекта
      */
     public String getName() {
-        return name;
+        return super.getName();
     }
 
     /**
@@ -56,7 +45,7 @@ public class Pet {
      * @see Person
      */
     public Person getOwner() {
-        return owner;
+        return super.getOwner();
     }
 
     /**
@@ -64,7 +53,7 @@ public class Pet {
      * @param age - устанавливает поле возраст
      */
     public void setAge(int age) {
-        this.age = age;
+        super.setAge(age);
     }
 
     /**
@@ -73,7 +62,7 @@ public class Pet {
      * @see Person
      */
     public void setOwner(Person owner) {
-        this.owner = owner;
+        super.setOwner(owner);
     }
 
     /**
@@ -81,7 +70,7 @@ public class Pet {
      * @param weight устанавливает поле вес
      */
     public void setWeight(double weight) {
-        this.weight = weight;
+        super.setWeight(weight);
     }
 
     /**
@@ -89,7 +78,7 @@ public class Pet {
      * @return double - вес объекта
      */
     public double getWeight() {
-        return weight;
+        return super.getWeight();
     }
 
     /**
@@ -98,7 +87,8 @@ public class Pet {
      */
     @Override
     public String toString() {
-        return String.format("Имя: %s\t возраст: %d \t имя хозяина: %s \t вес: %.2f", name, age, owner.getName(),weight);
+        return String.format("Имя: %s\t возраст: %d \t имя хозяина: %s \t вес: %.2f",getName(),
+                getAge(), getOwner().getName(), getWeight());
     }
 
     /**
@@ -107,7 +97,7 @@ public class Pet {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, name, age, owner, weight);
+        return Objects.hash(uuid, getName(),getOwner(), getWeight(), getAge());
     }
 
     /**
@@ -122,10 +112,10 @@ public class Pet {
 
         Pet pet = (Pet) obj;
         if (this.uuid != ((Pet) obj).uuid) return false;
-        if (this.name != ((Pet) obj).name) return false;
-        if (this.age != ((Pet) obj).age) return false;
-        if (this.owner != ((Pet) obj).owner) return false;
-        if (this.weight != ((Pet) obj).weight) return false;
+        if (this.getName() != ((Pet) obj).getName()) return false;
+        if (this.getAge() != ((Pet) obj).getAge()) return false;
+        if (this.getOwner() != ((Pet) obj).getOwner()) return false;
+        if (this.getWeight() != ((Pet) obj).getWeight()) return false;
 
         return true;
     }

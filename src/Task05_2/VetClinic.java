@@ -1,4 +1,4 @@
-package Task05_1;
+package Task05_2;
 
 import java.util.UUID;
 
@@ -19,33 +19,42 @@ public class VetClinic {
     public static void main(String[] args) throws Exception {
         //создание объектов Petи помещение в Map
         Person catOwner = new Person("Ivan", 35, Sex.MAN);
-        Pet cat = new Pet("Vasiliy", 3, catOwner, 3.2);
+        AddPetRequest catRequest = new AddPetRequest("Vasiliy", 3, catOwner, 3.2);
 
         Person catOwner2 = new Person("Roman", 40, Sex.MAN);
-        Pet cat2 = new Pet("Vasiliy", 4, catOwner2, 3.8);
+        AddPetRequest catRequest2 = new AddPetRequest("Vasiliy", 4, catOwner2, 3.8);
 
         Person dogOwner = new Person("Maria", 25, Sex.WOMAN);
-        Pet dog = new Pet("Tuzik", 1, dogOwner, 5.1);
+        AddPetRequest dogRequest = new AddPetRequest("Tuzik", 1, dogOwner, 5.1);
 
         Person hamsterOwner = new Person("Natalia", 19, Sex.WOMAN);
-        Pet hamster = new Pet("John", 1, hamsterOwner, 0.1);
+        AddPetRequest hamsterRequest = new AddPetRequest("John", 1, hamsterOwner, 0.1);
 
-        System.out.println(hamster.toString());
+
         try {
             System.out.println("Добавляем кота");
-            storage.addPet(cat);
+            UUID cat = storage.addPet(catRequest);
+            //меняем возраст
+            storage.changePetAge(cat, 4);
+
             System.out.println("Добавляем другого кота");
-            storage.addPet(cat2);
+            UUID cat2 = storage.addPet(catRequest2);
+
             System.out.println("Добавляем собаку");
-            storage.addPet(dog);
+            UUID dog = storage.addPet(dogRequest);
+            //меняем хозяина
+            storage.changePetOwnerInfo(dog,new Person("Oleg", 21, Sex.MAN));
+
+            System.out.println("Добавляем хомяка");
+            UUID hamster = storage.addPet(hamsterRequest);
+            //меняем вес
+            storage.changePetWeight(hamster, 0.15);
+
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
-        //изменение полей объекта Pet
-        storage.changePetAge(cat.getUuid(), 4);
-        storage.changePetOwnerInfo(dog.getUuid(), new Person("Oleg", 21, Sex.MAN));
-        storage.changePetWeight(hamster.getUuid(), 0.15);
+
 
         //поиск по имени
         System.out.println("Поиск бобика");

@@ -1,4 +1,4 @@
-package Task05_1;
+package Task05_2;
 
 import java.util.*;
 
@@ -7,7 +7,7 @@ import java.util.*;
  * created by Ksenya_Ushakova at 30.04.2020
  */
 public class PetStorage {
-    Map<UUID, Pet> petMap;
+    private Map<UUID, Pet> petMap;
 
     /**
      * публичный конструктор
@@ -17,13 +17,15 @@ public class PetStorage {
     }
 
     /**
-     * метод добавляет новый объект Pet в ассоциативный массив
-     *
-     * @param pet - объект класса Pet
+     * метод добавляет новый объект Pet в ассоциативный массив на оснвании запроса
+     * @see AddPetRequest
+     * @param request - объект запроса, характеризующий сведения о животном
      * @throws Exception выбрасывает исключение при попытке добавить уже имеющееся в списке животное
      * @see Pet
+     * @return uuid - возвращает уникальный идентификатор животного
      */
-    public UUID addPet(Pet pet) throws Exception {
+    public UUID addPet(AddPetRequest request) throws Exception {
+        Pet pet = new Pet(request);
         UUID uuid = pet.getUuid();
         if (!petMap.containsKey(uuid)) {
             petMap.put(uuid, pet);
