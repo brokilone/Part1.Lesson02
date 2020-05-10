@@ -7,8 +7,12 @@ import java.util.UUID;
  * Pet - класс описывает объект - домашнее животное, хранимый в картотеке
  * created by Ksenya_Ushakova at 30.04.2020
  */
-public class Pet extends AddPetRequest{
+public class Pet {
     private UUID uuid;
+    private String name;
+    private int age;
+    private Person owner;
+    private double weight;
 
     /**
      * публичный конструктор, используется для создания сущности Pet в картотеке на основании запроса
@@ -16,8 +20,11 @@ public class Pet extends AddPetRequest{
      * @param request
      */
     public Pet(AddPetRequest request) {
-        super(request.getName(), request.getAge(), request.getOwner(), request.getWeight());
         this.uuid = UUID.randomUUID();
+        this.name = request.getName();
+        this.age = request.getAge();
+        this.owner = request.getOwner();
+        this.weight = request.getWeight();
     }
 
     /**
@@ -25,9 +32,6 @@ public class Pet extends AddPetRequest{
      * @return возвращает UUID - уникальный идентификатор объекта
      */
     public UUID getUuid() {
-        if (uuid == null) {
-            uuid = UUID.randomUUID();
-        }
         return this.uuid;
     }
 
@@ -36,7 +40,7 @@ public class Pet extends AddPetRequest{
      * @return String - имя объекта
      */
     public String getName() {
-        return super.getName();
+        return this.name;
     }
 
     /**
@@ -45,7 +49,7 @@ public class Pet extends AddPetRequest{
      * @see Person
      */
     public Person getOwner() {
-        return super.getOwner();
+        return this.owner;
     }
 
     /**
@@ -53,7 +57,7 @@ public class Pet extends AddPetRequest{
      * @param age - устанавливает поле возраст
      */
     public void setAge(int age) {
-        super.setAge(age);
+        this.age = age;
     }
 
     /**
@@ -62,7 +66,7 @@ public class Pet extends AddPetRequest{
      * @see Person
      */
     public void setOwner(Person owner) {
-        super.setOwner(owner);
+        this.owner = owner;
     }
 
     /**
@@ -70,7 +74,7 @@ public class Pet extends AddPetRequest{
      * @param weight устанавливает поле вес
      */
     public void setWeight(double weight) {
-        super.setWeight(weight);
+        this.weight = weight;
     }
 
     /**
@@ -78,26 +82,32 @@ public class Pet extends AddPetRequest{
      * @return double - вес объекта
      */
     public double getWeight() {
-        return super.getWeight();
+        return this.weight;
     }
 
+    /**
+     * публичный геттер
+     * @return int - возрст объекта
+     */
+    public int getAge(){
+        return this.age;
+    }
     /**
      * переопределенный метод для удобного вывода в строку инфо об объекте (имя, возраст, имя хозяина, вес)
      * @return строку
      */
     @Override
     public String toString() {
-        return String.format("Имя: %s\t возраст: %d \t имя хозяина: %s \t вес: %.2f",getName(),
-                getAge(), getOwner().getName(), getWeight());
+        return String.format("Имя: %s\t возраст: %d \t имя хозяина: %s \t вес: %.2f",name,
+                age, owner.getName(), weight);
     }
-
     /**
      * переопределяем метод для вычисления hashcode исходя из константных полей объекта
      * @return возвращает целочисленный код объекта
      */
     @Override
     public int hashCode() {
-        return Objects.hash(uuid, getName(),getOwner(), getWeight(), getAge());
+        return Objects.hash(uuid, name,owner, weight, age);
     }
 
     /**
@@ -112,10 +122,10 @@ public class Pet extends AddPetRequest{
 
         Pet pet = (Pet) obj;
         if (this.uuid != ((Pet) obj).uuid) return false;
-        if (this.getName() != ((Pet) obj).getName()) return false;
-        if (this.getAge() != ((Pet) obj).getAge()) return false;
-        if (this.getOwner() != ((Pet) obj).getOwner()) return false;
-        if (this.getWeight() != ((Pet) obj).getWeight()) return false;
+        if (this.name != ((Pet) obj).getName()) return false;
+        if (this.age != ((Pet) obj).getAge()) return false;
+        if (this.owner != ((Pet) obj).getOwner()) return false;
+        if (this.weight != ((Pet) obj).getWeight()) return false;
 
         return true;
     }
