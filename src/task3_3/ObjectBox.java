@@ -1,4 +1,6 @@
-package task3;
+
+package task3_3;
+
 
 import java.util.Arrays;
 import java.util.HashSet;

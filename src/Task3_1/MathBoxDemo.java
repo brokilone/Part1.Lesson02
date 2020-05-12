@@ -1,6 +1,9 @@
-package Task1;
 
-import java.util.*;
+package Task3_1;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * Main

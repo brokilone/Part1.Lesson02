@@ -1,4 +1,6 @@
-package task3;
+
+package task3_3;
+
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,7 +13,9 @@ import java.util.Set;
  * @see ObjectBox
  * created by Ksenya_Ushakova at 27.04.2020
  */
-public class MathBox extends ObjectBox<Number>{
+
+public class MathBox extends ObjectBox<Number> {
+
 
     /**
      * конструктор принимает на вход массив объектов Number и раскладывает их в HashSet родителя
