@@ -46,7 +46,7 @@ public class TextFileReader {
                 sb.append(reader.readLine().toLowerCase());
             }
         } catch (IOException e) {
-            e.getMessage();
+            e.printStackTrace();
         }
         return sb;
     }
@@ -58,7 +58,8 @@ public class TextFileReader {
      * @return возвращает отсортированную коллекцию уникальных слов
      */
     private static Set<String> getWords(StringBuilder sb) {
-        String[] data = sb.toString().split("[\\p{P} \\t\\n\\r]");
+
+        String[] data = sb.toString().split("[\\p{P}\\s\\t\\n\\r]");
         Set<String> words = new TreeSet<>(Arrays.asList(data));
         return words;
     }
@@ -74,7 +75,7 @@ public class TextFileReader {
                 writer.write(word + "\n");
             }
         } catch (IOException e) {
-            e.getMessage();
+            e.printStackTrace();
         }
     }
 

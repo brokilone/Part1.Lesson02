@@ -20,8 +20,9 @@ import java.util.Random;
  * created by Ksenya_Ushakova at 10.05.2020
  */
 public class ParagraphGenerator {
-    Random random;
-    String[] words;
+    private Random random;
+    private String[] words;
+
 
     /**
      * Публичный конструктор:
@@ -32,7 +33,9 @@ public class ParagraphGenerator {
     public ParagraphGenerator(){
         random = new Random();
         words = new String[random.nextInt(1000)+1];
+
         for (int i = 0; i < words.length; i++) {
+            //TODO не ошибка, но затрудняет возможность проверить, что условие про вероятность соблюдается
             words[i] = generateOneWord();
         }
     }
@@ -55,10 +58,24 @@ public class ParagraphGenerator {
         //последнее предложение завершается разрывом строки и переносом каретки
         sb.append(generateOneSentence(probability, words) + "\r\n");
         //если длина абзаца превысила заданный максимальный размер, обрезаем
+
+        // TODO Понятно, чего вы хотели добиться, но в результате у вас может не выполнятся условие,
+        // TODO что предложение заканчивается нужным знаком препинания
+
         if (sb.length() > size) {
-            return sb.toString().substring(0,size);
+            String text = fitToSize(size, sb);
+            return text;
         }
         return sb.toString();
+    }
+
+    private String fitToSize(int size, StringBuilder sb) {
+        String text = sb.substring(0,size);
+        char end = text.charAt(text.length() - 1);
+        if (Character.isLetter(end)){
+            text = text.substring(0,text.length()-1) + endOfSentence();
+        }
+        return text;
     }
 
     /**
@@ -72,11 +89,14 @@ public class ParagraphGenerator {
 
         int length = random.nextInt(15)+1; // кол-во слов в предложении
         //определяем позицию слова в предложении из массива библиотеки
-        int position = position(needFromArray(probability),length);
+        int position = position(needFromLibrary(probability),length);
 
         StringBuilder sb = new StringBuilder();
         //слово из массива либо генерация нового, завершается пробелом
         for (int i = 0; i < length; i++) {
+
+            // TODO честно говоря тут вы немного перекрутили. Что вам мешало просто вызвать в if-е needFromArray(probability)?
+
             if (i == position) {
                 String libword = words[random.nextInt(words.length)];
                 sb.append(libword + " ");
@@ -124,13 +144,15 @@ public class ParagraphGenerator {
         return s;
     }
 
+    // НАСТАВНИК
+    // не слишком удачное название array это нечто общее в нашем случае это скорее dictionary
     /**
      * Метод для определения необходимости извлечь слово из библиотеки,
      * исходя из заданной пользователем вероятности
      * @param probability - принимает на вход пользовательское значение в процентах
      * @return возвращает true, если сгенерированное число от 1 до 100 меньше заданной вероятности
      */
-    private boolean needFromArray(int probability) {
+    private boolean needFromLibrary(int probability) {
         int i = random.nextInt(100);
         return (i < probability) ? true : false;
     }
@@ -163,6 +185,8 @@ public class ParagraphGenerator {
         return new String(word);
     }
 
+    // TODO относится ли запятая к слову?
+
     /**
      * Определяет, будет ли после слова запятая и, при необходимости, конкатенирует ее
      * @return слово с запятой или без
@@ -177,4 +201,7 @@ public class ParagraphGenerator {
         return word;
     }
 
+    public String[] getWords() {
+        return words;
+    }
 }

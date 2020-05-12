@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 public class GeneratorDemo {
 
     private static ParagraphGenerator generator = new ParagraphGenerator();
-    private static String[] words = generator.words;
+    private static String[] words = generator.getWords();
 
     /**
      * главный метод
