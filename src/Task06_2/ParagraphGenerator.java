@@ -20,6 +20,8 @@ import java.util.Random;
  * created by Ksenya_Ushakova at 10.05.2020
  */
 public class ParagraphGenerator {
+    // НАСТАВНИК
+    // следим за модификаторами доступа
     Random random;
     String[] words;
 
@@ -33,6 +35,8 @@ public class ParagraphGenerator {
         random = new Random();
         words = new String[random.nextInt(1000)+1];
         for (int i = 0; i < words.length; i++) {
+            // НАСТАВНИК
+            // не ошибка, но затрудняет возможность проверить, что условие про вероятность соблюдается
             words[i] = generateOneWord();
         }
     }
@@ -55,6 +59,9 @@ public class ParagraphGenerator {
         //последнее предложение завершается разрывом строки и переносом каретки
         sb.append(generateOneSentence(probability, words) + "\r\n");
         //если длина абзаца превысила заданный максимальный размер, обрезаем
+        // НАСТАВНИК
+        // Понятно, чего вы хотели добиться, но в результате у вас может не выполнятся условие,
+        // что предложение заканчивается нужным знаком препинания
         if (sb.length() > size) {
             return sb.toString().substring(0,size);
         }
@@ -77,6 +84,8 @@ public class ParagraphGenerator {
         StringBuilder sb = new StringBuilder();
         //слово из массива либо генерация нового, завершается пробелом
         for (int i = 0; i < length; i++) {
+            // НАСТАВНИК
+            // честно говоря тут вы немного перекрутили. Что вам мешало просто вызвать в if-е needFromArray(probability)?
             if (i == position) {
                 String libword = words[random.nextInt(words.length)];
                 sb.append(libword + " ");
@@ -124,6 +133,8 @@ public class ParagraphGenerator {
         return s;
     }
 
+    // НАСТАВНИК
+    // не слишком удачное название array это нечто общее в нашем случае это скорее dictionary
     /**
      * Метод для определения необходимости извлечь слово из библиотеки,
      * исходя из заданной пользователем вероятности
@@ -163,6 +174,8 @@ public class ParagraphGenerator {
         return new String(word);
     }
 
+    // НАСТАВНИК
+    // относится ли запятая к слову?
     /**
      * Определяет, будет ли после слова запятая и, при необходимости, конкатенирует ее
      * @return слово с запятой или без
