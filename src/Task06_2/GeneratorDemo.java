@@ -10,9 +10,6 @@ import java.io.InputStreamReader;
  */
 public class GeneratorDemo {
 
-    private static ParagraphGenerator generator = new ParagraphGenerator();
-    private static String[] words = generator.getWords();
-
     /**
      * главный метод
      * @param args
@@ -32,8 +29,8 @@ public class GeneratorDemo {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        FileGenerator gen = new FileGenerator();
-        gen.getFiles(path,n,size,words,50);
+        Library library = new Library();
+        FileGenerator gen = new FileGenerator(library.getWords(), 100);
+        gen.getFiles(path,n,size);
     }
 }

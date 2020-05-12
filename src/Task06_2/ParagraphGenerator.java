@@ -20,8 +20,6 @@ import java.util.Random;
  * created by Ksenya_Ushakova at 10.05.2020
  */
 public class ParagraphGenerator {
-    // НАСТАВНИК
-    // следим за модификаторами доступа
     private Random random;
     private String[] words;
 
@@ -32,16 +30,9 @@ public class ParagraphGenerator {
      * генерируется длина массива библиотеки от 1 до 1000,
      * затем массив заполняется случайными словами
      */
-    public ParagraphGenerator(){
+    public ParagraphGenerator(String[] words){
         random = new Random();
-        words = new String[random.nextInt(1000)+1];
-
-        for (int i = 0; i < words.length; i++) {
-            // НАСТАВНИК
-            // не ошибка, но затрудняет возможность проверить, что условие про вероятность соблюдается
-            //TODO не ошибка, но затрудняет возможность проверить, что условие про вероятность соблюдается
-            words[i] = generateOneWord();
-        }
+        this.words = words;
     }
 
     /**
@@ -49,24 +40,18 @@ public class ParagraphGenerator {
      * @param size - максимальный размер абзаца
      * @param probability - вероятность вхождения слова из массива-библиотеки
      *                      в каждое предложение абзаца в процентах
-     * @param words - массив-библиотека
      * @return возвращает строку, представляющую собой один текстовый обзац
      */
-    public String generateOneParagraph(int size, int probability, String[] words) {
+    public String generateOneParagraph(int size, int probability) {
         int sentenceAmount = random.nextInt(20)+1; // кол-во предложений в абзаце
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < sentenceAmount-1; i++) {
             //предложения, кроме последнего, завершаются разделяющим пробелом
-            sb.append(generateOneSentence(probability, words) + " ");
+            sb.append(generateOneSentence(probability) + " ");
         }
         //последнее предложение завершается разрывом строки и переносом каретки
-        sb.append(generateOneSentence(probability, words) + "\r\n");
+        sb.append(generateOneSentence(probability) + "\r\n");
         //если длина абзаца превысила заданный максимальный размер, обрезаем
-        // НАСТАВНИК
-        // Понятно, чего вы хотели добиться, но в результате у вас может не выполнятся условие,
-        // что предложение заканчивается нужным знаком препинания
-        // TODO Понятно, чего вы хотели добиться, но в результате у вас может не выполнятся условие,
-        // TODO что предложение заканчивается нужным знаком препинания
 
         if (sb.length() > size) {
             String text = fitToSize(size, sb);
@@ -88,10 +73,9 @@ public class ParagraphGenerator {
      * Метод генерирует одно текстовое предложение
      * @param probability - вероятность вхождения слова из массива-библиотеки
      *                      в предложение в процентах
-     * @param words - массив-библиотека
      * @return возвращает строку, представляющуюю собой одно предложение
      */
-    private String generateOneSentence(int probability, String[] words){
+    private String generateOneSentence(int probability){
 
         int length = random.nextInt(15)+1; // кол-во слов в предложении
         //определяем позицию слова в предложении из массива библиотеки
@@ -100,15 +84,11 @@ public class ParagraphGenerator {
         StringBuilder sb = new StringBuilder();
         //слово из массива либо генерация нового, завершается пробелом
         for (int i = 0; i < length; i++) {
-// НАСТАВНИК
-            // честно говоря тут вы немного перекрутили. Что вам мешало просто вызвать в if-е needFromArray(probability)?
-            // TODO честно говоря тут вы немного перекрутили. Что вам мешало просто вызвать в if-е needFromArray(probability)?
-
             if (i == position) {
                 String libword = words[random.nextInt(words.length)];
                 sb.append(libword + " ");
             } else {
-                sb.append(generateOneWordExt() + " ");
+                sb.append(generateOneWordWithComma() + " ");
             }
         }
 
@@ -151,8 +131,6 @@ public class ParagraphGenerator {
         return s;
     }
 
-    // НАСТАВНИК
-    // не слишком удачное название array это нечто общее в нашем случае это скорее dictionary
     /**
      * Метод для определения необходимости извлечь слово из библиотеки,
      * исходя из заданной пользователем вероятности
@@ -161,7 +139,7 @@ public class ParagraphGenerator {
      */
     private boolean needFromLibrary(int probability) {
         int i = random.nextInt(100);
-        return (i < probability) ? true : false;
+        return i < probability;
     }
 
     /**
@@ -191,15 +169,12 @@ public class ParagraphGenerator {
         }
         return new String(word);
     }
-    // НАСТАВНИК
-    // относится ли запятая к слову?
-    // TODO относится ли запятая к слову?
 
     /**
      * Определяет, будет ли после слова запятая и, при необходимости, конкатенирует ее
      * @return слово с запятой или без
      */
-    private String generateOneWordExt(){
+    private String generateOneWordWithComma(){
         String word = generateOneWord();
         //установим вероятность запятой после слова = 20%;
         boolean hasComma = random.nextInt(10) < 2;
@@ -209,7 +184,4 @@ public class ParagraphGenerator {
         return word;
     }
 
-    public String[] getWords() {
-        return words;
-    }
 }

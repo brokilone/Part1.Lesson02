@@ -46,8 +46,6 @@ public class TextFileReader {
                 sb.append(reader.readLine().toLowerCase());
             }
         } catch (IOException e) {
-            // НАСТАВНИК
-            // это просто получение сообщения, чтобы вывелось можно использовать printStackTrace
             e.printStackTrace();
         }
         return sb;
@@ -60,9 +58,7 @@ public class TextFileReader {
      * @return возвращает отсортированную коллекцию уникальных слов
      */
     private static Set<String> getWords(StringBuilder sb) {
-        // НАСТАВНИК
-        // для пробела также есть специальный символ \s
-        String[] data = sb.toString().split("[\\p{P}\\s\\t\\n\\r]");
+        String[] data = sb.toString().split("[\\p{P}\\s\\t\\n\\r]+");
         Set<String> words = new TreeSet<>(Arrays.asList(data));
         return words;
     }
