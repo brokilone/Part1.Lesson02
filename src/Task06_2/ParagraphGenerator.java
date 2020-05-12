@@ -20,6 +20,8 @@ import java.util.Random;
  * created by Ksenya_Ushakova at 10.05.2020
  */
 public class ParagraphGenerator {
+    // НАСТАВНИК
+    // следим за модификаторами доступа
     private Random random;
     private String[] words;
 
@@ -35,6 +37,8 @@ public class ParagraphGenerator {
         words = new String[random.nextInt(1000)+1];
 
         for (int i = 0; i < words.length; i++) {
+            // НАСТАВНИК
+            // не ошибка, но затрудняет возможность проверить, что условие про вероятность соблюдается
             //TODO не ошибка, но затрудняет возможность проверить, что условие про вероятность соблюдается
             words[i] = generateOneWord();
         }
@@ -58,7 +62,9 @@ public class ParagraphGenerator {
         //последнее предложение завершается разрывом строки и переносом каретки
         sb.append(generateOneSentence(probability, words) + "\r\n");
         //если длина абзаца превысила заданный максимальный размер, обрезаем
-
+        // НАСТАВНИК
+        // Понятно, чего вы хотели добиться, но в результате у вас может не выполнятся условие,
+        // что предложение заканчивается нужным знаком препинания
         // TODO Понятно, чего вы хотели добиться, но в результате у вас может не выполнятся условие,
         // TODO что предложение заканчивается нужным знаком препинания
 
@@ -94,7 +100,8 @@ public class ParagraphGenerator {
         StringBuilder sb = new StringBuilder();
         //слово из массива либо генерация нового, завершается пробелом
         for (int i = 0; i < length; i++) {
-
+// НАСТАВНИК
+            // честно говоря тут вы немного перекрутили. Что вам мешало просто вызвать в if-е needFromArray(probability)?
             // TODO честно говоря тут вы немного перекрутили. Что вам мешало просто вызвать в if-е needFromArray(probability)?
 
             if (i == position) {
@@ -184,7 +191,8 @@ public class ParagraphGenerator {
         }
         return new String(word);
     }
-
+    // НАСТАВНИК
+    // относится ли запятая к слову?
     // TODO относится ли запятая к слову?
 
     /**
