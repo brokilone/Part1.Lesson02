@@ -28,7 +28,6 @@ public class SerialDeserial {
         Class<?> objectClass = object.getClass();
 
         Field[] fields = objectClass.getDeclaredFields(); //поля объекта
-        Constructor<?>[] cons = objectClass.getConstructors(); //конструкторы объекта
 
         try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file));){
             stream.writeUTF(objectClass.getName()); //записали имя класса
