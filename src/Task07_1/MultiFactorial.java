@@ -1,10 +1,11 @@
 package Task07_1;
 
 import java.math.BigInteger;
-import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentNavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * MultiFactorial
@@ -13,7 +14,7 @@ import java.util.concurrent.Callable;
  */
 public class MultiFactorial implements Callable {
     private int n;
-    private static NavigableMap<Integer, BigInteger> cache = new TreeMap<>();//мапа для хранения ранее вычисленных значений
+    private static ConcurrentNavigableMap<Integer, BigInteger> cache = new ConcurrentSkipListMap<>();//мапа для хранения ранее вычисленных значений
 
     /**
      * публичный конструктор принимает на вход целое число для вычисления факториала
