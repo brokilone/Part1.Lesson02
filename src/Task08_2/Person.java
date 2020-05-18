@@ -5,7 +5,7 @@ package Task08_2;
  *
  * created by Ksenya_Ushakova at 15.05.2020
  */
-public class Person {
+public class Person{
     //все поля приватные, публичных геттеров нет
     private String name;
     private int age;
@@ -19,6 +19,7 @@ public class Person {
      * @param weight
      */
     public Person(String name, int age, double weight) {
+
         this.name = name;
         this.age = age;
         this.weight = weight;
@@ -32,6 +33,7 @@ public class Person {
      * @param isMarried женат или нет
      */
     public Person(String name, int age, double weight, boolean isMarried) {
+
         this.name = name;
         this.age = age;
         this.weight = weight;

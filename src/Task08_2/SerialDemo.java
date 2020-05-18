@@ -15,8 +15,8 @@ public class SerialDemo {
      * @param args
      */
     public static void main(String[] args) {
-        Person vasya = new Person("Petya", 25, 75);
-        Dog sharik = new Dog("Sharik", 4, vasya);
+        Person vasya = new Person("Petya", 25, 75, false);
+        Dog sharik = new Dog("Sharik", 4, vasya, "collie");
         Path file = Paths.get("dog.bin");
         if (Files.notExists(file)) {
             try {
@@ -28,5 +28,6 @@ public class SerialDemo {
 
         SerialDeserial sd = new SerialDeserial();
         sd.serialize(sharik,file.toString());
+
     }
 }
