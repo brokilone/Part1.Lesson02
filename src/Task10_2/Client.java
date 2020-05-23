@@ -1,4 +1,4 @@
-package Task10_1;
+package Task10_2;
 
 import java.io.IOException;
 import java.net.*;
@@ -11,6 +11,10 @@ import java.util.Scanner;
  * Каждый клиент после запуска отправляет свое имя серверу.
  * После чего начинает отправлять ему сообщения.
  * Каждое сообщение сервер подписывает именем клиента и рассылает всем клиентам (broadcast).
+ *
+ * Усовершенствовать задание 1:
+ * добавить возможность отправки личных сообщений (unicast).
+ * добавить возможность выхода из чата с помощью написанной в чате команды «quit»
  *
  * created by Ksenya_Ushakova at 20.05.2020
  */
@@ -40,14 +44,15 @@ public class Client{
      */
     public static void main(String[] args) {
 
-        Client client = null;
+        Client client;
         try {
             client = new Client();
             client.start();
         } catch (SocketException | UnknownHostException e) {
             System.err.println("Не удается запустить клиент");
             e.printStackTrace();
-            client.clientSocket.close();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
 
@@ -55,19 +60,28 @@ public class Client{
 
     /**
      * Метод создает потоки для приема и получения сообщений
+     * Если клиент выходит из чата, сокет закрывается
      */
-    public void start() {
+    public void start() throws InterruptedException {
         ClientSender sender = new ClientSender();
         ClientReceiver receiver = new ClientReceiver();
         sender.start();
         receiver.start();
+        sender.join();//ждем ввода команды exit
+        receiver.isOn = false;//завершаем второй поток - поток отправления
+        clientSocket.close();
     }
 
     /**
      * Класс - отправитель сообщений
+     * Если клиент вводит exit,
+     * поток прекращает работу
      */
     class ClientSender extends Thread{
         public void run(){
+            System.out.println("Чтобы отправлять сообщения, укажите свое имя.\n" +
+                    "После этого вы сможете отправлять сообщения в общий чат." +
+                    "Чтобы отправить личное сообщение, введите -u");
             System.out.println("Введите имя: ");
             while (true) {
                 String clientMsg = sc.nextLine();
@@ -82,22 +96,34 @@ public class Client{
                     e.printStackTrace();
                     clientSocket.close();
                 }
+                if (clientMsg.equalsIgnoreCase("quit")) {
+                    break;
+                }
+
             }
+
         }
     }
 
     /**
      * Класс - получатель сообщений
+     * если поток отправитель завершает работу,
+     * переменная isOn установится в false и поток-получатель завершится
      */
     class ClientReceiver extends Thread{
+        private boolean isOn = true;
         public void run(){
-            while (true) {
+            while (isOn) {
+
                 byte[] receiveMsg = new byte[5000];
                 DatagramPacket receivePacket = new DatagramPacket(receiveMsg, receiveMsg.length);
                 System.out.println(new String(receivePacket.getData()));
                 try {
                     clientSocket.receive(receivePacket);
                 } catch (IOException e) {
+                    if (!isOn) {
+                        break;
+                    }
                     System.out.println("Не удалось получить пакет");
                     e.printStackTrace();
                     clientSocket.close();
