@@ -2,6 +2,7 @@ package Task10_2;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -21,7 +22,8 @@ import java.util.Scanner;
 public class Client{
     private Scanner sc;
     private DatagramSocket clientSocket;
-    private static final int PORT = 8085;
+    //private static final int PORT = 8085;
+    private static final int PORT = new Random().nextInt(50)+8000;//чтобы затестить параллельный запуск на разных портах
     private InetAddress ip;
     private static final int SERVER_PORT = 8888;
 
@@ -79,10 +81,10 @@ public class Client{
      */
     class ClientSender extends Thread{
         public void run(){
-            System.out.println("Чтобы отправлять сообщения, укажите свое имя.\n" +
+            System.out.println("Чтобы отправлять сообщения, укажите логин.\n" +
                     "После этого вы сможете отправлять сообщения в общий чат." +
                     "Чтобы отправить личное сообщение, введите -u");
-            System.out.println("Введите имя: ");
+            System.out.println("Введите логин: ");
             while (true) {
                 String clientMsg = sc.nextLine();
                 byte[] sendMsg = clientMsg.getBytes();

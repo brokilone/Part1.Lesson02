@@ -1,6 +1,8 @@
 package Task10_2;
 
 
+import javafx.util.Pair;
+
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
@@ -25,8 +27,8 @@ public class Server {
     private Scanner sc;
     private DatagramSocket serverSocket;
     private final static int PORT = 8888;
-    private Map<InetAddress, String> clientMap;
-    private List<InetAddress> list;
+    private Map<Pair<InetAddress, Integer>, String> clientMap;
+
 
     /**
      * публичный конструктор
@@ -38,8 +40,7 @@ public class Server {
         sc = new Scanner(System.in);
         serverSocket = new DatagramSocket(PORT, InetAddress.getByName("localhost"));
         serverSocket.setBroadcast(true);
-        clientMap = new HashMap<>(); //для сохранения имени клиента по ip
-        list = new ArrayList<>();//храним id для упрощения навигации по пользователям в режиме unicast
+        clientMap = new HashMap<>(); //для сохранения имени клиента по ip+port
     }
 
     /**
@@ -69,9 +70,9 @@ public class Server {
 
     /**
      * Метод обеспечивает получение сообщений от клиентов,
-     * если клиент отправил первое сообщение (в мапе его ip нет),
+     * если клиент отправил первое сообщение (в мапе его ip+port нет),
      * сервер считывает это сообщение как имя клиента и сохраняет его по ключу ip в мапе
-     * Последущие сообщения от клиента будут подписыватсья его именем
+     * Последущие сообщения от клиента будут подписываться его именем
      *
      * @throws IOException
      */
@@ -83,12 +84,14 @@ public class Server {
 
             serverSocket.receive(receivePacket);
 
+            int port = receivePacket.getPort();
             InetAddress ip = receivePacket.getAddress();
+            Pair data = new Pair(ip, port);
 
-            if (!clientMap.containsKey(ip)) {
-                storeNewClient(receivePacket, ip);
+            if (!clientMap.containsKey(data)) {
+                storeNewClient(receivePacket, data);
             } else {
-                prepareMsg(receivePacket, ip);
+                prepareMsg(receivePacket, data);
             }
 
         }
@@ -96,44 +99,57 @@ public class Server {
 
     /**
      * Метод сохраняет имя клиента в коллекции hashmap по ключу. Ключом выступает ip отправителя
+     * Перед сохранением проверяется, не занято ли имя другим юзером. Если занято, предлагается использовать
+     * другой логин
      * После сохранения сервер отправляет broadcast сообщение всем подключенным пользователям о подключении
      * нового клиента
-     * В список добавляется ip клиента для связи с порядковым номером
      * @param receivePacket полученный фрейм
-     * @param ip            ip адрес отправителя
+     * @param data - пара ip-адрес+порт отправителя
      * @throws IOException
      */
-    private void storeNewClient(DatagramPacket receivePacket, InetAddress ip) throws IOException {
+    private void storeNewClient(DatagramPacket receivePacket, Pair<InetAddress, Integer> data) throws IOException {
         String clientName = new String(receivePacket.getData()).trim();
-        clientMap.put(ip, clientName);
-        list.add(ip);
-        String greeting = "Подключен новый пользователь: " + clientName;
-        broadcast(greeting);
+        if (clientMap.containsValue(clientName)) {
+            byte[] sendMsg = "Login занят, попробуйте другой".getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendMsg, sendMsg.length, data.getKey(),data.getValue());
+            serverSocket.send(sendPacket);
+        } else {
+            clientMap.put(data, clientName);
+            String greeting = "Подключен новый пользователь: " + clientName;
+            broadcast(greeting);
+        }
     }
 
     /**
      * Метод анализирует сообщение и выбирает дальнейший режим отправки
      *
      * @param receivePacket полученный фрейм
-     * @param ip            ip адрес отправителя
+     * @param data - ip адрес и порт отправителя
      * @throws IOException
      */
-    private void prepareMsg(DatagramPacket receivePacket, InetAddress ip) throws IOException {
-        String clientName = clientMap.get(ip);
+    private void prepareMsg(DatagramPacket receivePacket, Pair<InetAddress, Integer> data)
+                            throws IOException {
+        String clientName = clientMap.get(data);
         String msg = new String(receivePacket.getData()).trim();
 
         if (msg.equals("-u")) {//клиент запрашивает список доступных адресатов
-            sendListOfUsers(ip);
+            sendListOfUsers(data);
 
         } else if (msg.startsWith("-u")) { //клиент запрашивает unicast конкретному юзеру
-            String[] data = msg.split("\\s");
+            String[] words = msg.split("\\s");
+            String unimsg = clientName + ": " + msg.substring(msg.indexOf(words[1]) + words[1].length());
             try {
-                int id = Integer.parseInt(data[0].substring(2));//id получателя
-                InetAddress userIp = list.get(id);//ip получателя
-                String unimsg = clientName + ": " + msg.substring(msg.indexOf(" ") + 1);
-                unicast(userIp, unimsg);
-            } catch (NumberFormatException e) {
-                unicast(ip, "Неверный запрос");//если не удалось распарсить id
+                String name = words[1];
+                Pair<InetAddress, Integer> userData;
+                for (Map.Entry<Pair<InetAddress, Integer>, String> client : clientMap.entrySet()) {
+                    if (client.getValue().equals(name)) {
+                        userData = client.getKey();
+                        unicast(userData, unimsg);
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                unicast(data, "Неверный запрос");//если не удалось распарсить id
             }
 
         } else if (msg.equalsIgnoreCase("quit")) {//пользователь вышел из чата
@@ -147,31 +163,28 @@ public class Server {
 
     /**
      * Метод формирует список доступных адресатов и отправляет на ip, который запросил данные
-     * @param ip ip отправителя запроса
+     * @param data ip+port отправителя запроса
      * @throws IOException
      */
-    private void sendListOfUsers(InetAddress ip) throws IOException {
-        StringBuilder users = new StringBuilder("Доступные пользователи:\n" +
-                "id\tимя\n");
-
-        for (int i = 0; i < list.size(); i++) {
-            String name = clientMap.get(list.get(i));
-            users.append("-u").append(i).append("\t").append(name).append("\n");
+    private void sendListOfUsers(Pair<InetAddress, Integer> data) throws IOException {
+        StringBuilder users = new StringBuilder("Доступные пользователи:\n");
+        for (String name : clientMap.values()) {
+            users.append(name).append("\n");
         }
 
-        users.append("Укажите id и введите сообщение:\n");
-        unicast(ip, users.toString());
+        users.append("Введите -u, логин получателя и сообщение:\n");
+        unicast(data, users.toString());
     }
 
     /**
      * Метод для отправки сообщения в режиме unicast
-     * @param ip - ip получателя
+     * @param data - ip+port получателя
      * @param unimsg сообщение
      * @throws IOException
      */
-    private void unicast(InetAddress ip, String unimsg) throws IOException {
+    private void unicast(Pair<InetAddress, Integer> data, String unimsg) throws IOException {
         byte[] sendMsg = unimsg.getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendMsg, sendMsg.length, ip, 8085);
+        DatagramPacket sendPacket = new DatagramPacket(sendMsg, sendMsg.length, data.getKey(), data.getValue());
         serverSocket.send(sendPacket);
     }
 
@@ -185,8 +198,14 @@ public class Server {
     private void broadcast(String clientMsg) throws IOException {
 
         byte[] sendMsg = clientMsg.getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendMsg, sendMsg.length, InetAddress.getByName("255.255.255.255"), 8085);
-        serverSocket.send(sendPacket);
+        //эмуляция для тестирования на разных портах с одним айпишником
+        for (Pair<InetAddress, Integer> clientData : clientMap.keySet()) {
+            DatagramPacket sendPacket = new DatagramPacket(sendMsg, sendMsg.length, clientData.getKey(), clientData.getValue());
+            serverSocket.send(sendPacket);
+        }
+        //В реальном приложении если все клиенты слушают определенный порт, можно было б оставить код ниже
+//        DatagramPacket sendPacket = new DatagramPacket(sendMsg, sendMsg.length, InetAddress.getByName("255.255.255.255"), 8085);
+//        serverSocket.send(sendPacket);
     }
 
 }
