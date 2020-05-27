@@ -25,7 +25,7 @@ public class OutOfMemoryErrorPermGenDemo {
      * @param args
      * @throws MalformedURLException
      */
-    public static void main(String[] args) throws MalformedURLException {//ключ -Xmx512m
+    public static void main(String[] args) throws MalformedURLException {//ключ -XX:MaxMetaspaceSize=64m
 
         for (int i = 0; i < COUNT; i++) {
             String fileName = "file:" + i + ".jar";
