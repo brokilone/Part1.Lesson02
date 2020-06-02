@@ -26,7 +26,7 @@ public class ArticleDaoImpl implements ArticleDao{
             preparedStatement.setString(1, article.getTitle());
             preparedStatement.setString(2, article.getContent());
             preparedStatement.setString(3, article.getAuthor().getLogin());
-            preparedStatement.setString(3, article.getAccess().toString());
+            preparedStatement.setString(4, article.getAccess().toString());
             preparedStatement.executeUpdate();
 
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {

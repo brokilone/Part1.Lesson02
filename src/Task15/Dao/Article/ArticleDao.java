@@ -1,7 +1,6 @@
 package Task15.Dao.Article;
 
 import Task15.Model.Article;
-import Task15.Model.User;
 
 /**
  * ArticleDao

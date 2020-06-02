@@ -6,12 +6,16 @@ import java.sql.SQLException;
 
 public class ConnectionManagerJdbcImpl implements ConnectionManager {
 
-    public static final ConnectionManager INSTANCE = new ConnectionManagerJdbcImpl();
+    public static ConnectionManager INSTANCE;
 
     private ConnectionManagerJdbcImpl() {
     }
 
     public static ConnectionManager getInstance() {
+        if (INSTANCE == null){
+            INSTANCE = new ConnectionManagerJdbcImpl();
+
+        }
         return INSTANCE;
     }
 

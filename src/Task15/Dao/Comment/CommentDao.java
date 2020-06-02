@@ -1,8 +1,7 @@
 package Task15.Dao.Comment;
 
-import Task15.Model.Article;
 import Task15.Model.Comment;
-import Task15.Model.User;
+
 
 
 /**
@@ -10,7 +9,7 @@ import Task15.Model.User;
  * created by Ksenya_Ushakova at 01.06.2020
  */
 public interface CommentDao {
-    int addComment(Article article, User user, String content);
+    int addComment(Comment comment);
 
     Comment getCommentById(int id);
 

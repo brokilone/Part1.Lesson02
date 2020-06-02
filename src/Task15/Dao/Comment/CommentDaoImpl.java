@@ -2,9 +2,7 @@ package Task15.Dao.Comment;
 
 import Task15.Dao.Article.ArticleDaoImpl;
 import Task15.Dao.User.UserDaoImpl;
-import Task15.Model.Article;
 import Task15.Model.Comment;
-import Task15.Model.User;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 
@@ -19,14 +17,14 @@ public class CommentDaoImpl implements CommentDao{
     private static final ConnectionManager connectionManager =
             ConnectionManagerJdbcImpl.getInstance();
     @Override
-    public int addComment(Article article, User user, String content) {
+    public int addComment(Comment comment) {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "INSERT INTO comment_info " +
                              "VALUES (DEFAULT, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, content);
-            preparedStatement.setString(2, user.getLogin());
-            preparedStatement.setInt(3, article.getId());
+            preparedStatement.setString(1, comment.getContent());
+            preparedStatement.setString(2, comment.getAuthor().getLogin());
+            preparedStatement.setInt(3, comment.getSource().getId());
             preparedStatement.executeUpdate();
 
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
