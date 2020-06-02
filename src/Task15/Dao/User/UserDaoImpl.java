@@ -18,9 +18,7 @@ public class UserDaoImpl implements UserDao {
     private static final ConnectionManager connectionManager =
             ConnectionManagerJdbcImpl.getInstance();
 
-    public UserDaoImpl() {
-        DBManager.renewDataBase(connectionManager.getConnection());
-    }
+
 
     @Override
     public String addUser(User user) {

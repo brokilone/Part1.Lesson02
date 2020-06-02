@@ -61,7 +61,7 @@ public class Main {
         comment2.setContent("Boring...");
         boolean updateSecond = impl.updateCommentById(comment2);
         if (updateSecond){
-            System.out.println("Successfully updated comment with id = 1");
+            System.out.println("Successfully updated comment with id = 2");
             System.out.println("Current text: " + impl.getCommentById(2).getContent());
         }
 
@@ -81,16 +81,16 @@ public class Main {
         article2.setId(id);
         System.out.println("Add new article with id = " + id);
 
-        boolean deleteFirst = impl.deleteById(1);
-        if (deleteFirst) {
-            System.out.println("Successfully deleted article with id = 1");
+        boolean deleteSecond = impl.deleteById(2);
+        if (deleteSecond) {
+            System.out.println("Successfully deleted article with id = 2");
         }
 
-        article2.setAccess(Article.ArticleAccess.OPEN);
-        boolean updateSecond = impl.updateById(article2);
-        if (updateSecond){
-            System.out.println("Successfully updated article with id = 2");
-            System.out.println("Current access level: " + impl.getById(2).getAccess());
+        article.setAccess(Article.ArticleAccess.AVAILABLE_TO_AUTHORIZED_USERS);
+        boolean updateFirst = impl.updateById(article);
+        if (updateFirst){
+            System.out.println("Successfully updated article with id = 1");
+            System.out.println("Current access level: " + impl.getById(1).getAccess());
         }
         System.out.println("-----------------------------------------------------");
 

@@ -1,9 +1,6 @@
 package Task15;
 
-import java.sql.Connection;
-import java.sql.SQLDataException;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * DBManager
@@ -11,8 +8,11 @@ import java.sql.Statement;
  */
 public class DBManager {
     public static void renewDataBase(Connection connection){
-       try(Statement statement = connection.createStatement()){
-
+        Savepoint first = null;
+        Statement statement = null;
+       try{
+           statement = connection.createStatement();
+           connection.setAutoCommit(false);
            statement.addBatch("USE my_blog");
            statement.addBatch("DROP TABLE IF EXISTS user_info, article, access_level, comment_info");
            statement.addBatch("CREATE TABLE user_info\n" +
@@ -29,6 +29,9 @@ public class DBManager {
            statement.addBatch("INSERT INTO user_info\n" +
                    "VALUES\n" +
                    "('beginner','l0alhf48xkv9', 0);");
+
+           first = connection.setSavepoint("first");
+
            statement.addBatch("CREATE TABLE article\n" +
                    "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
                    "title VARCHAR(100) NOT NULL,\n" +
@@ -58,10 +61,17 @@ public class DBManager {
                    "VALUES\n" +
                    "('Author, I wrote about it yesterday', 'experienced_progger', 1);");
            statement.executeBatch();
+           connection.commit();
        }catch (SQLException e){
             e.printStackTrace();
+           try {
+               connection.rollback(first);
+               statement.executeBatch();
+               connection.commit();
+           } catch (SQLException e1){
+               e1.printStackTrace();
+           }
        }
 
     }
-
 }
