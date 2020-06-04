@@ -37,7 +37,7 @@ public class DBManager {
                    "title VARCHAR(100) NOT NULL,\n" +
                    "content BLOB,\n" +
                    "author VARCHAR(50) NOT NULL,\n" +
-                   "access_level ENUM('open','available to list','available to authorized users','available to authors'),\n" +
+                   "access_level ENUM('open','available to authors', 'available to list') NOT NULL,\n" +
                    "FOREIGN KEY (author) REFERENCES user_info(login) ON DELETE CASCADE\n" +
                    ");");
            statement.addBatch("INSERT INTO article\n" +
@@ -74,4 +74,5 @@ public class DBManager {
        }
 
     }
+
 }

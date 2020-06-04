@@ -1,4 +1,4 @@
-package Task15.Model;
+package Task15.Model.UserInfo;
 
 /**
  * AuthorImplementException

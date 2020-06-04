@@ -2,7 +2,7 @@ package Task15.Dao.Comment;
 
 import Task15.Dao.Article.ArticleDaoImpl;
 import Task15.Dao.User.UserDaoImpl;
-import Task15.Model.Comment;
+import Task15.Model.UserInfo.Comment;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 

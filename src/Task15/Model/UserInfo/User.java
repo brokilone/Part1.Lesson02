@@ -1,4 +1,4 @@
-package Task15.Model;
+package Task15.Model.UserInfo;
 
 import Task15.Dao.Article.ArticleDao;
 import Task15.Dao.Article.ArticleDaoImpl;
@@ -6,6 +6,8 @@ import Task15.Dao.Comment.CommentDao;
 import Task15.Dao.Comment.CommentDaoImpl;
 import Task15.Dao.User.UserDao;
 import Task15.Dao.User.UserDaoImpl;
+import Task15.Model.Article;
+import Task15.Model.ArticleAccess;
 
 import java.util.List;
 
@@ -40,7 +42,7 @@ public class User implements Author, Commentator {
 
 
     @Override
-    public int writeArticle(String title, String content, Article.ArticleAccess access) {
+    public int writeArticle(String title, String content, ArticleAccess access) {
         try {
             if (isAuthor()) {
                 Article article = new Article(0, title, content, this, access);
@@ -54,9 +56,28 @@ public class User implements Author, Commentator {
         }
         return -1;
     }
+    @Override
+    public int writeArticle(String title, String content, ArticleAccess access, String[] logins) {
+        try {
+            if (isAuthor()) {
+                if (access != ArticleAccess.AVAILABLE_TO_LIST) {
+                    return writeArticle(title, content, access);
+                }
+                Article article = new Article(0, title, content, this, access);
+                int id = new ArticleDaoImpl().addArticle(article);
+                article.setId(id);
+                access.setList(logins);
+                return id;
+            }
+            else throw new AuthorImplementException("A positive rating is required to access author features");
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        return -1;
+    }
 
     @Override
-    public boolean editArticle(int id, String content, Article.ArticleAccess access) {
+    public boolean editArticle(int id, String content, ArticleAccess access) {
         try {
             if (isAuthor()) {
                 ArticleDao articleDao = new ArticleDaoImpl();
@@ -114,6 +135,12 @@ public class User implements Author, Commentator {
         }
     }
 
+    @Override
+    public List<Comment> getAllComments() {
+        UserDao userDao = new UserDaoImpl();
+        return userDao.getAllComments(this);
+    }
+
     private void setRating(int rating) {
         this.rating = rating;
     }
@@ -132,4 +159,12 @@ public class User implements Author, Commentator {
         return new UserDaoImpl().updateByLogin(this);
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", rating=" + rating +
+                '}';
+    }
 }

@@ -1,8 +1,9 @@
 package Task15.Model;
 
-import Task15.Main;
+import Task15.Dao.Article.ArticleDaoImpl;
+import Task15.Model.UserInfo.Comment;
+import Task15.Model.UserInfo.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,49 +67,18 @@ public class Article {
         this.content = content;
     }
 
-    /**
-     * AccessLevel
-     * created by Ksenya_Ushakova at 31.05.2020
-     */
-    public enum ArticleAccess {
-        OPEN(Main.getAllUsers()), AVAILABLE_TO_LIST(new ArrayList<>()),
-        AVAILABLE_TO_AUTHORIZED_USERS(Main.getOnlineUsers()),
-        AVAILABLE_TO_AUTHORS(Main.getAllAuthors());
+    public List<Comment> getListOfComments(){
+        return new ArticleDaoImpl().getListOfComments(this);
+    }
 
-        private List<User> list;
-
-        ArticleAccess( List<User> list) {
-            this.list = list;
-        }
-
-
-        @Override
-        public String toString() {
-            switch (this) {
-                case OPEN:
-                    return "open";
-                case AVAILABLE_TO_LIST:
-                    return "avaiable to list";
-                case AVAILABLE_TO_AUTHORS:
-                    return "available to authors";
-                case AVAILABLE_TO_AUTHORIZED_USERS:
-                    return "available to authorized users";
-            }
-            return null;
-        }
-
-        public static ArticleAccess getByName(String name){
-            switch (name) {
-                case "open":
-                    return OPEN;
-                case "avaiable to list":
-                    return AVAILABLE_TO_LIST;
-                case "available to authors":
-                    return AVAILABLE_TO_AUTHORS;
-                case "available to authorized users":
-                    return AVAILABLE_TO_AUTHORIZED_USERS;
-            }
-            return null;
-        }
+    @Override
+    public String toString() {
+        return "Article{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", author=" + author +
+                ", access=" + access +
+                '}';
     }
 }

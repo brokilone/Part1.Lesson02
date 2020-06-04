@@ -1,8 +1,10 @@
 package Task15.Dao.User;
 
-import Task15.DBManager;
+import Task15.Dao.Article.ArticleDaoImpl;
 import Task15.Model.Article;
-import Task15.Model.User;
+import Task15.Model.ArticleAccess;
+import Task15.Model.UserInfo.Comment;
+import Task15.Model.UserInfo.User;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 
@@ -107,7 +109,7 @@ public class UserDaoImpl implements UserDao {
                 int id = resultSet.getInt(1);
                 String title = resultSet.getString(2);
                 String content = resultSet.getString(3);
-                Article.ArticleAccess access = Article.ArticleAccess.getByName(resultSet.getString(5));
+                ArticleAccess access = ArticleAccess.getByName(resultSet.getString(5));
                 list.add(new Article(id,title,content,user,access));
             }
             return list;
@@ -116,4 +118,28 @@ public class UserDaoImpl implements UserDao {
         }
         return null;
     }
+
+    @Override
+    public List<Comment> getAllComments(User user) {
+        List<Comment> list = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection()){
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement("SELECT * FROM comment_info WHERE author = ?");
+            preparedStatement.setString(1, user.getLogin());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                int id = resultSet.getInt(1);
+                String content = resultSet.getString(2);
+                int articleId  = resultSet.getInt(4);
+                Article article = new ArticleDaoImpl().getById(articleId);
+                list.add(new Comment(id,content,article,user));
+            }
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

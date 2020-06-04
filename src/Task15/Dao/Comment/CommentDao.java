@@ -1,6 +1,6 @@
 package Task15.Dao.Comment;
 
-import Task15.Model.Comment;
+import Task15.Model.UserInfo.Comment;
 
 
 

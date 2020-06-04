@@ -1,4 +1,6 @@
-package Task15.Model;
+package Task15.Model.UserInfo;
+
+import Task15.Model.Article;
 
 /**
  * CommentInfo
@@ -39,5 +41,15 @@ public class Comment {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", source=" + source +
+                ", author=" + author +
+                '}';
     }
 }

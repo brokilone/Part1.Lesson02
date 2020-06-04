@@ -1,14 +1,12 @@
 package Task15;
 
-import Task15.Dao.Article.ArticleDao;
+
 import Task15.Dao.Article.ArticleDaoImpl;
-import Task15.Dao.Comment.CommentDao;
-import Task15.Dao.Comment.CommentDaoImpl;
 import Task15.Dao.User.UserDao;
 import Task15.Dao.User.UserDaoImpl;
 import Task15.Model.Article;
-import Task15.Model.Comment;
-import Task15.Model.User;
+import Task15.Model.ArticleAccess;
+import Task15.Model.UserInfo.User;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 
@@ -37,14 +35,14 @@ public class Main2 {
                         "Aenean commodo ligula eget dolor. Aenean massa. " +
                         "Cum sociis natoque penatibus et magnis dis parturient montes," +
                         " nascetur ridiculus mus.";
-                int id = spy.writeArticle("Lorem", articleText, Article.ArticleAccess.OPEN);
+                int id = spy.writeArticle("Lorem", articleText, ArticleAccess.OPEN);
                 List<Article> articleList = spy.getAllArticles();
                 System.out.println("All articles by " + login);
                 for (Article article : articleList) {
                     System.out.println("Title: " + article.getTitle());
                     System.out.println("Text: " + article.getContent());
                 }
-                boolean edit = spy.editArticle(id, "Never read it", Article.ArticleAccess.AVAILABLE_TO_AUTHORS);
+                boolean edit = spy.editArticle(id, "Never read it", ArticleAccess.AVAILABLE_TO_AUTHORS);
                 if (edit) {
                     System.out.println("After edit: ");
                     System.out.println("Text: " + new ArticleDaoImpl().getById(id).getContent());

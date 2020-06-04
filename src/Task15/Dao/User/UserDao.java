@@ -1,7 +1,8 @@
 package Task15.Dao.User;
 
 import Task15.Model.Article;
-import Task15.Model.User;
+import Task15.Model.UserInfo.Comment;
+import Task15.Model.UserInfo.User;
 
 import java.util.List;
 
@@ -16,4 +17,5 @@ public interface UserDao {
     boolean deleteByLogin(String login);
 
     List<Article> getAllArticles(User user);
+    List<Comment> getAllComments(User user);
 }

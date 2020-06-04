@@ -1,6 +1,7 @@
-package Task15.Model;
+package Task15.Model.UserInfo;
 
-import java.util.ArrayList;
+import Task15.Model.Article;
+
 import java.util.List;
 
 /**
@@ -8,11 +9,13 @@ import java.util.List;
  * created by Ksenya_Ushakova at 02.06.2020
  */
 public interface Commentator {
-    List<Comment> listOfComments = new ArrayList<>();
+
 
     int writeComment(Article article, String content);
     boolean editComment(int id, String content);
     boolean deleteComment(int id);
     void rateComment(int id, boolean up);
+
+    List<Comment> getAllComments();
 
 }
