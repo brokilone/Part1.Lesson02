@@ -62,6 +62,10 @@ public class Article {
         this.access = access;
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     /**
      * AccessLevel
      * created by Ksenya_Ushakova at 31.05.2020

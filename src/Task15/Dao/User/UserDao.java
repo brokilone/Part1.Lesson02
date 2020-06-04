@@ -1,6 +1,9 @@
 package Task15.Dao.User;
 
+import Task15.Model.Article;
 import Task15.Model.User;
+
+import java.util.List;
 
 /**
  * UserInfoDao
@@ -11,4 +14,6 @@ public interface UserDao {
     User getByLogin(String login);
     boolean updateByLogin(User user);
     boolean deleteByLogin(String login);
+
+    List<Article> getAllArticles(User user);
 }

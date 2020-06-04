@@ -1,6 +1,7 @@
 package Task15.Dao.User;
 
 import Task15.DBManager;
+import Task15.Model.Article;
 import Task15.Model.User;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
@@ -9,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * UserInfoDaoImpl
@@ -90,5 +93,27 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public List<Article> getAllArticles(User user) {
+        List<Article> list = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection()){
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement("SELECT * FROM article WHERE author = ?");
+            preparedStatement.setString(1, user.getLogin());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                int id = resultSet.getInt(1);
+                String title = resultSet.getString(2);
+                String content = resultSet.getString(3);
+                Article.ArticleAccess access = Article.ArticleAccess.getByName(resultSet.getString(5));
+                list.add(new Article(id,title,content,user,access));
+            }
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

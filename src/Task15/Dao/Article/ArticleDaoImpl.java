@@ -8,6 +8,8 @@ import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ArticleDaoImpl
@@ -99,5 +101,28 @@ public class ArticleDaoImpl implements ArticleDao{
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public List<Comment> getListOfComments(Article article) {
+        List<Comment> list = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection();
+             PreparedStatement preparedStatement =
+                     connection.prepareStatement("SELECT * FROM comment_info WHERE source = ?")){
+
+            preparedStatement.setInt(1,article.getId());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                int id = resultSet.getInt(1);
+                String content = resultSet.getString(2);
+                String login = resultSet.getString(4);
+                User author = new UserDaoImpl().getByLogin(login);
+                list.add(new Comment(id, content,article,author));
+            }
+            return list;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

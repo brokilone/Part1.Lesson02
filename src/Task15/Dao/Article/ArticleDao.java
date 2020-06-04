@@ -1,6 +1,9 @@
 package Task15.Dao.Article;
 
 import Task15.Model.Article;
+import Task15.Model.Comment;
+
+import java.util.List;
 
 /**
  * ArticleDao
@@ -11,4 +14,5 @@ public interface ArticleDao {
     Article getById(int id);
     boolean updateById(Article article);
     boolean deleteById(int id);
+    List<Comment> getListOfComments(Article article);
 }
