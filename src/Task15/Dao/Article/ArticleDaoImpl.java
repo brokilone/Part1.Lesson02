@@ -5,12 +5,14 @@ import Task15.Model.Article;
 import Task15.Model.ArticleAccess;
 import Task15.Model.UserInfo.Comment;
 import Task15.Model.UserInfo.User;
+import Task15.Model.BlogException.UserNotFoundException;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ArticleDaoImpl
@@ -49,29 +51,43 @@ public class ArticleDaoImpl implements ArticleDao {
         }
     }
 
+    /**
+     * Получение статьи из БД по id
+     * @param id - id статьи
+     * @return опционал объекта Article
+     * @throws SQLException
+     */
     @Override
-    public Article getById(int id) throws SQLException {
+    public Optional<Article> getById(int id) throws SQLException {
+        Article article = null;
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement =
                      connection.prepareStatement("SELECT * FROM article WHERE id = ?");) {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
+
             if (resultSet.next()) {
-                return new Article(
+                article = new Article(
                         resultSet.getInt(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
-                        new UserDaoImpl().getByLogin(resultSet.getString(4)),
+                        new UserDaoImpl().getByLogin(resultSet.getString(4))
+                                .orElseThrow(UserNotFoundException::new),
                         ArticleAccess.getByName(resultSet.getString(5))
                 );
             }
 
         }
-        return null;
+        return Optional.ofNullable(article);
     }
 
+    /**
+     * Изменение статьи в БД
+     * @param article статья
+     * @throws SQLException
+     */
     @Override
-    public boolean updateById(Article article) {
+    public void updateById(Article article) throws SQLException {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement =
                      connection.prepareStatement("UPDATE article SET " +
@@ -83,16 +99,16 @@ public class ArticleDaoImpl implements ArticleDao {
             preparedStatement.setString(4, article.getAccess().toString());
             preparedStatement.setInt(5, article.getId());
             preparedStatement.executeUpdate();
-            return true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
     }
 
+    /**
+     * Удаление статьи по id из БД
+     * @param id - id статьи
+     * @throws SQLException
+     */
     @Override
-    public boolean deleteById(int id) {
+    public void deleteById(int id) throws SQLException {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement =
                      connection.prepareStatement("DELETE FROM article " +
@@ -100,15 +116,17 @@ public class ArticleDaoImpl implements ArticleDao {
 
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
     }
 
+    /**
+     * Получение списка комментариев к статье
+     * @param article
+     * @return возвращает List
+     * @throws SQLException
+     */
     @Override
-    public List<Comment> getListOfComments(Article article) {
+    public List<Comment> getListOfComments(Article article) throws SQLException {
         List<Comment> list = new ArrayList<>();
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement =
@@ -120,13 +138,10 @@ public class ArticleDaoImpl implements ArticleDao {
                 int id = resultSet.getInt(1);
                 String content = resultSet.getString(2);
                 String login = resultSet.getString(4);
-                User author = new UserDaoImpl().getByLogin(login);
+                User author = new UserDaoImpl().getByLogin(login).orElseThrow(UserNotFoundException::new);
                 list.add(new Comment(id, content, article, author));
             }
             return list;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 }

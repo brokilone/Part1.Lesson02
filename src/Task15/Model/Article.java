@@ -4,10 +4,12 @@ import Task15.Dao.Article.ArticleDaoImpl;
 import Task15.Model.UserInfo.Comment;
 import Task15.Model.UserInfo.User;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Article
+ * класс описывает статью в блоге
  * created by Ksenya_Ushakova at 31.05.2020
  */
 public class Article {
@@ -32,45 +34,83 @@ public class Article {
         this.access = access;
     }
 
+    /**
+     * Геттер id
+     * @return id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Сеттер id
+     * @param id - id статьи
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * Геттер заголовка
+     * @return заголовок
+     */
     public String getTitle() {
         return title;
     }
 
-
+    /**
+     * Геттер текста статьи
+     * @return текст статьи
+     */
     public String getContent() {
         return content;
     }
 
-
+    /**
+     * Геттер автора статьи
+     * @return автора статьи
+     */
     public User getAuthor() {
         return author;
     }
 
-
+    /**
+     * Геттер уровня доступа
+     * @return уровень доступа
+     */
     public ArticleAccess getAccess() {
         return access;
     }
 
+    /**
+     * Сеттер уровня доступа
+     * @param access уровень доступа
+     */
     public void setAccess(ArticleAccess access) {
         this.access = access;
     }
 
+    /**
+     * Сеттер текста статьи
+     * @param content текст статьи
+     */
     public void setContent(String content) {
         this.content = content;
     }
 
-    public List<Comment> getListOfComments(){
+    /**
+     * Получение всех комментариев к данной статье
+     * @return List
+     * @throws SQLException
+     */
+    public List<Comment> getListOfComments() throws SQLException {
         return new ArticleDaoImpl().getListOfComments(this);
     }
 
+    /**
+     * Строковое представление полей объекта
+     * @return
+     */
     @Override
     public String toString() {
         return "Article{" +

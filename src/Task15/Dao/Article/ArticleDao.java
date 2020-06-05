@@ -5,6 +5,7 @@ import Task15.Model.UserInfo.Comment;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ArticleDao
@@ -14,8 +15,8 @@ import java.util.List;
  */
 public interface ArticleDao {
     int addArticle(Article article) throws SQLException;
-    Article getById(int id) throws SQLException;
-    boolean updateById(Article article);
-    boolean deleteById(int id);
-    List<Comment> getListOfComments(Article article);
+    Optional<Article> getById(int id) throws SQLException;
+    void updateById(Article article) throws SQLException;
+    void deleteById(int id) throws SQLException;
+    List<Comment> getListOfComments(Article article) throws SQLException;
 }

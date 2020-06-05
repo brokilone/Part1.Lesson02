@@ -3,68 +3,81 @@ package Task15.Dao.User;
 import Task15.Dao.Article.ArticleDaoImpl;
 import Task15.Model.Article;
 import Task15.Model.ArticleAccess;
+import Task15.Model.BlogException.ArticleNotFoundException;
 import Task15.Model.UserInfo.Comment;
 import Task15.Model.UserInfo.User;
+import Task15.Model.BlogException.UserNotFoundException;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * UserInfoDaoImpl
+ * класс реализует CRUD-операции с объектом User
+ *
  * created by Ksenya_Ushakova at 31.05.2020
  */
 public class UserDaoImpl implements UserDao {
     private static final ConnectionManager connectionManager =
             ConnectionManagerJdbcImpl.getInstance();
 
-
-
+    /**
+     * Добавление пользователя в БД
+     * @param user - пользователь
+     * @return логин объекта
+     * @throws SQLException
+     */
     @Override
-    public String addUser(User user) {
+    public String addUser(User user) throws SQLException {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement =
                      connection.prepareStatement("INSERT INTO user_info\n" +
-                     " VALUES(?,?,?)");){
+                             " VALUES(?,?,?)");) {
             preparedStatement.setString(1, user.getLogin());
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setInt(3, user.getRating());
             preparedStatement.executeUpdate();
             return user.getLogin();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
+    /**
+     * Поиск пользователя в БД по логину
+     * @param login логин пользователя
+     * @return опционал объекта
+     * @throws SQLException
+     */
     @Override
-    public User getByLogin(String login) {
+    public Optional<User> getByLogin(String login) throws SQLException {
+        User user = null;
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement =
                      connection.prepareStatement("SELECT * FROM user_info WHERE login = ?");){
             preparedStatement.setString(1,login);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return new User(
+               user =  new User(
                         resultSet.getString(1),
                         resultSet.getString(2),
                         resultSet.getInt(3)
                 );
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return Optional.ofNullable(user);
         }
-        return null;
     }
 
+    /**
+     * Редактирование данных пользователя в БД
+     * @param user - пользователь
+     * @throws SQLException
+     */
     @Override
-    public boolean updateByLogin(User user) {
+    public void updateByLogin(User user) throws SQLException {
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement preparedStatement =
                      connection.prepareStatement("UPDATE user_info SET password = ?," +
@@ -73,16 +86,16 @@ public class UserDaoImpl implements UserDao {
             preparedStatement.setInt(2, user.getRating());
             preparedStatement.setString(3, user.getLogin());
             preparedStatement.executeUpdate();
-            return true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
     }
 
+    /**
+     * Удаление записи о пользователе в БД по логину
+     * @param login
+     * @throws SQLException
+     */
     @Override
-    public boolean deleteByLogin(String login) {
+    public void deleteByLogin(String login) throws SQLException {
         try (  Connection connection = connectionManager.getConnection();
                PreparedStatement preparedStatement =
                        connection.prepareStatement("DELETE FROM user_info " +
@@ -90,15 +103,40 @@ public class UserDaoImpl implements UserDao {
 
             preparedStatement.setString(1,login);
             preparedStatement.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return false;
     }
 
+    /**
+     * Проверка доступа к функционалу автора (требуется неотрицательный рейтинг)
+     * @param user
+     * @return true, если рейтинг неотрицателен
+     * @throws SQLException
+     */
     @Override
-    public List<Article> getAllArticles(User user) {
+    public boolean isAuthor(User user) throws SQLException {
+        try (Connection connection = connectionManager.getConnection()){
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement("SELECT rating FROM user_info WHERE login = ?");
+            preparedStatement.setString(1, user.getLogin());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int rating = resultSet.getInt(1);
+                return rating >= 0;
+            } else {
+                throw new UserNotFoundException();
+            }
+
+        }
+    }
+
+    /**
+     * Метод возвращает список всех статей пользователя
+     * @param user пользователь
+     * @return List
+     * @throws SQLException
+     */
+    @Override
+    public List<Article> getAllArticles(User user) throws SQLException {
         List<Article> list = new ArrayList<>();
         try (Connection connection = connectionManager.getConnection()){
             PreparedStatement preparedStatement =
@@ -113,14 +151,17 @@ public class UserDaoImpl implements UserDao {
                 list.add(new Article(id,title,content,user,access));
             }
             return list;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
     }
 
+    /**
+     * Возвращает список всех комментариев пользователя
+     * @param user - пользователь
+     * @return list
+     * @throws SQLException
+     */
     @Override
-    public List<Comment> getAllComments(User user) {
+    public List<Comment> getAllComments(User user) throws SQLException {
         List<Comment> list = new ArrayList<>();
         try (Connection connection = connectionManager.getConnection()){
             PreparedStatement preparedStatement =
@@ -131,14 +172,81 @@ public class UserDaoImpl implements UserDao {
                 int id = resultSet.getInt(1);
                 String content = resultSet.getString(2);
                 int articleId  = resultSet.getInt(4);
-                Article article = new ArticleDaoImpl().getById(articleId);
+                Article article = new ArticleDaoImpl().getById(articleId).orElseThrow(ArticleNotFoundException::new);
                 list.add(new Comment(id,content,article,user));
             }
             return list;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
+    }
+
+    /**
+     * Метод получает список всех пользователей с неотрицательным рейтингом
+     * @return List
+     * @throws SQLException
+     */
+    @Override
+    public List<User> getAllAuthors() throws SQLException {
+        List<User> list = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM user_info WHERE rating >= 0");
+            if (resultSet.next()) {
+                list.add(new User(
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getInt(3)
+                ));
+            }
+            return list;
+        }
+    }
+
+    /**
+     * Метод получает список всех зарегистрированных пользоваталей
+     * @return List
+     * @throws SQLException
+     */
+    @Override
+    public List<User> getAllUsers() throws SQLException {
+        List<User> list = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM user_info");
+            if (resultSet.next()) {
+                list.add(new User(
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getInt(3)
+                ));
+            }
+            return list;
+        }
+    }
+
+    /**
+     * Метод получает список всех пользователей согласно указанному перечню логинов
+     * @param logins - логины
+     * @return List
+     * @throws SQLException
+     */
+    @Override
+    public List<User> getGroupByLogins(String[] logins) throws SQLException {
+        List<User> list = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM user_info WHERE login IN (?)");
+            String allLogins = Arrays.toString(logins);
+            statement.setString(1, allLogins.substring(1 ,allLogins.length()-1));
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                list.add(new User(
+                        resultSet.getString(1),
+                        resultSet.getString(2),
+                        resultSet.getInt(3)
+                ));
+            }
+            return list;
+        }
     }
 
 

@@ -8,11 +8,18 @@ import Task15.Dao.User.UserDao;
 import Task15.Dao.User.UserDaoImpl;
 import Task15.Model.Article;
 import Task15.Model.ArticleAccess;
+import Task15.Model.BlogException.ArticleNotFoundException;
+import Task15.Model.BlogException.AuthorImplementException;
+import Task15.Model.BlogException.CommentNotFoundException;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
- * UserInfo
+ * User
+ * класс описывает пользователя блога,
+ * реализует интерфейсы автора статей и комментатора
+ * <p>
  * created by Ksenya_Ushakova at 31.05.2020
  */
 public class User implements Author, Commentator {
@@ -26,139 +33,254 @@ public class User implements Author, Commentator {
         this.rating = rating;
     }
 
+    /**
+     * Геттер для поля login
+     *
+     * @return login
+     */
     public String getLogin() {
         return login;
     }
 
-
+    /**
+     * Геттер для поля password
+     *
+     * @return password
+     */
     public String getPassword() {
         return password;
     }
 
-
+    /**
+     * Геттер для поля rating
+     *
+     * @return rating
+     */
     public int getRating() {
         return rating;
     }
 
+    /**
+     * Создание пользователем новой статьи с занесением записи в БД с открытым доступом или только для авторов
+     *
+     * @param title   - заголовок
+     * @param content - текст статьи
+     * @param access  - уровень доступа
+     * @return id статьи
+     * @throws SQLException
+     */
+    @Override
+    public int writeArticle(String title, String content, ArticleAccess access) throws SQLException {
 
-    @Override
-    public int writeArticle(String title, String content, ArticleAccess access) {
-        try {
-            if (isAuthor()) {
-                Article article = new Article(0, title, content, this, access);
-                int id = new ArticleDaoImpl().addArticle(article);
-                article.setId(id);
-                return id;
-            }
-            else throw new AuthorImplementException("A positive rating is required to access author features");
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+        if (isAuthor()) { //проверка доступа к функционалу
+            Article article = new Article(0, title, content, this, access);
+            int id = new ArticleDaoImpl().addArticle(article);
+            article.setId(id);
+            return id;
+        } else {
+            throw new AuthorImplementException("A positive rating is required to access author features");
         }
-        return -1;
-    }
-    @Override
-    public int writeArticle(String title, String content, ArticleAccess access, String[] logins) {
-        try {
-            if (isAuthor()) {
-                if (access != ArticleAccess.AVAILABLE_TO_LIST) {
-                    return writeArticle(title, content, access);
-                }
-                Article article = new Article(0, title, content, this, access);
-                int id = new ArticleDaoImpl().addArticle(article);
-                article.setId(id);
-                access.setList(logins);
-                return id;
-            }
-            else throw new AuthorImplementException("A positive rating is required to access author features");
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
-        return -1;
     }
 
+    /**
+     * Создание пользователем новой статьи с занесением записи в БД с доступом по списку
+     *
+     * @param title   - заголовок
+     * @param content - текст статьи
+     * @param access  - уровень доступа
+     * @param logins  - перечень пользователей, кому разрешен доступ
+     * @return id статьи
+     * @throws SQLException
+     */
     @Override
-    public boolean editArticle(int id, String content, ArticleAccess access) {
-        try {
-            if (isAuthor()) {
-                ArticleDao articleDao = new ArticleDaoImpl();
-                Article article = articleDao.getById(id);
+    public int writeArticle(String title, String content, ArticleAccess access, String[] logins) throws SQLException {
+        if (isAuthor()) {
+            if (access != ArticleAccess.AVAILABLE_TO_LIST) {
+                return writeArticle(title, content, access);
+            }
+            Article article = new Article(0, title, content, this, access);
+            int id = new ArticleDaoImpl().addArticle(article);
+            article.setId(id);
+            access.setList(logins);
+            return id;
+        } else throw new AuthorImplementException("A positive rating is required to access author features");
+
+    }
+
+    /**
+     * Изменение статьи в БД
+     *
+     * @param id      id статьи
+     * @param content текст
+     * @param access  уровень доступа
+     * @throws SQLException
+     */
+    @Override
+    public void editArticle(int id, String content, ArticleAccess access) throws SQLException {
+
+        if (isAuthor()) { //проверка доступа к функционалу, при негативном рейтинге запрет на редактирование статьи
+            ArticleDao articleDao = new ArticleDaoImpl();
+            Article article = articleDao.getById(id).orElseThrow(ArticleNotFoundException::new);
+            if (article.getAuthor().login.equals(this.login)) {//проверка, не чужую ли статью редактируем
                 article.setContent(content);
                 article.setAccess(access);
-                return articleDao.updateById(article);
-            } else throw new AuthorImplementException("A positive rating is required to access author features");
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+                articleDao.updateById(article);
+            } else {
+                throw new AuthorImplementException("Access denied, it is not possible " +
+                        "to edit an article of another author");
+            }
+        } else throw new AuthorImplementException("A positive rating is required to access author features");
+
+    }
+
+    /**
+     * Удаление статьи по id
+     *
+     * @param id
+     * @throws SQLException
+     */
+    @Override
+    public void deleteArticle(int id) throws SQLException {
+        ArticleDao articleDao = new ArticleDaoImpl();
+        Article article = articleDao.getById(id).orElseThrow(ArticleNotFoundException::new);
+        if (article.getAuthor().login.equals(this.login)) {//проверка, не чужую ли статью редактируем
+            articleDao.deleteById(id);//проверка, не чужую ли статью удаляем
+        } else {
+            throw new AuthorImplementException("Access denied, it is not possible " +
+                    "to delete an article of another author");
         }
-        return false;
     }
 
+    /**
+     * Получение всех статей автора
+     *
+     * @return List
+     * @throws SQLException
+     */
     @Override
-    public boolean deleteArticle(int id) {
-        return new ArticleDaoImpl().deleteById(id);
-    }
-
-    @Override
-    public List<Article> getAllArticles() {
+    public List<Article> getAllArticles() throws SQLException {
         UserDao userDao = new UserDaoImpl();
         return userDao.getAllArticles(this);
     }
 
+    /**
+     * Добавление комментария к статье
+     *
+     * @param article статья
+     * @param content текст комментария
+     * @return id комментария
+     * @throws SQLException
+     */
     @Override
-    public int writeComment(Article article, String content) {
+    public int writeComment(Article article, String content) throws SQLException {
         Comment comment = new Comment(0, content, article, this);
         int id = new CommentDaoImpl().addComment(comment);
         comment.setId(id);
         return id;
     }
 
+    /**
+     * редактирование комментария к статье
+     *
+     * @param id      - id статьи
+     * @param content - текст статьи
+     * @throws SQLException
+     */
     @Override
-    public boolean editComment(int id, String content) {
+    public void editComment(int id, String content) throws SQLException {
         CommentDao commentDao = new CommentDaoImpl();
-        Comment comment = commentDao.getCommentById(id);
-        comment.setContent(content);
-        return commentDao.updateCommentById(comment);
-    }
-
-    @Override
-    public boolean deleteComment(int id) {
-        return new CommentDaoImpl().deleteCommentById(id);
-    }
-
-    @Override
-    public void rateComment(int id, boolean up) {
-        User author = new CommentDaoImpl().getCommentById(id).getAuthor();
-        int value = author.getRating();
-        if (up) {
-            author.setRating(value + 10);
+        Comment comment = commentDao.getCommentById(id)
+                .orElseThrow(() -> new CommentNotFoundException("Error: comment not found or deleted"));
+        if (comment.getAuthor().login.equals(login)) {//проверка доступа
+            comment.setContent(content);
+            commentDao.updateCommentById(comment);
         } else {
-            author.setRating(value - 10);
+            throw new AuthorImplementException("Access denied, it is not possible" +
+                    " to edit a comment of another author");
+        }
+
+    }
+
+    /**
+     * удаление комментария к статье
+     *
+     * @param id - id статьи
+     * @throws SQLException
+     */
+    @Override
+    public void deleteComment(int id) throws SQLException {
+        CommentDao commentDao = new CommentDaoImpl();
+        Comment comment = commentDao.getCommentById(id)
+                .orElseThrow(() -> new CommentNotFoundException("Error: comment not found or deleted"));
+        if (comment.getAuthor().login.equals(login)) {//проверка доступа
+            commentDao.deleteCommentById(id);
+        } else {
+            throw new AuthorImplementException("Access denied, it is not possible" +
+                    " to delete a comment of another author");
         }
     }
 
+    /**
+     * Оценка комментария, положительная оценка повышает рейтинг комментатора на 10 единиц,
+     * отрицательная - снижает на 10 единиц
+     *
+     * @param id - id комментария
+     * @param up - установка в true означает положительную оценку
+     * @throws SQLException
+     */
     @Override
-    public List<Comment> getAllComments() {
+    public void rateComment(int id, boolean up) throws SQLException {
+        User author = new CommentDaoImpl().getCommentById(id)
+                .orElseThrow(() -> new CommentNotFoundException("Error: comment not found or deleted")).getAuthor();
+        if (author.login.equals(login)) {//проверка, оценка собственных комментариев недопустима
+            throw new AuthorImplementException("Access denied, it is not possible to manage your own rating");
+        }
+        int value = author.getRating();
+        if (up) {
+            author.setRating(value + 10);
+
+        } else {
+            author.setRating(value - 10);
+        }
+        new UserDaoImpl().updateByLogin(author);
+    }
+
+    /**
+     * Получение всех комментариев автора
+     *
+     * @return
+     * @throws SQLException
+     */
+    @Override
+    public List<Comment> getAllComments() throws SQLException {
         UserDao userDao = new UserDaoImpl();
         return userDao.getAllComments(this);
     }
 
+    /**
+     * Сеттер для rating
+     *
+     * @param rating - рейтинг пользователя
+     */
     private void setRating(int rating) {
         this.rating = rating;
     }
 
-    public boolean isAuthor(){
-        return (this.rating >= 0);
+    /**
+     * Проверка доступа к интерфейсу автора
+     *
+     * @return true если рейтинг неотрицателен
+     * @throws SQLException
+     */
+    public boolean isAuthor() throws SQLException {
+        return new UserDaoImpl().isAuthor(this);
     }
 
-    private boolean changeLogin(String newLogin){
-        this.login = newLogin;
-        return new UserDaoImpl().updateByLogin(this);
-    }
-
-    private boolean changePassword(String newPassword){
-        this.password = newPassword;
-        return new UserDaoImpl().updateByLogin(this);
-    }
-
+    /**
+     * Вывод инфо о пользователе в строку
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return "User{" +

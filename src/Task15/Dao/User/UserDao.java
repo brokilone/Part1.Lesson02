@@ -4,18 +4,28 @@ import Task15.Model.Article;
 import Task15.Model.UserInfo.Comment;
 import Task15.Model.UserInfo.User;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * UserInfoDao
+ * интерфейс CRUD-операций с объектами User (пользователи)
+ *
  * created by Ksenya_Ushakova at 31.05.2020
  */
 public interface UserDao {
-    String addUser(User user);
-    User getByLogin(String login);
-    boolean updateByLogin(User user);
-    boolean deleteByLogin(String login);
+    String addUser(User user) throws SQLException;
+    Optional<User> getByLogin(String login) throws SQLException;
+    void updateByLogin(User user) throws SQLException;
+    void deleteByLogin(String login) throws SQLException;
 
-    List<Article> getAllArticles(User user);
-    List<Comment> getAllComments(User user);
+    boolean isAuthor(User user) throws SQLException;
+
+    List<Article> getAllArticles(User user) throws SQLException;
+    List<Comment> getAllComments(User user) throws SQLException;
+
+    List<User> getAllAuthors() throws SQLException;
+    List<User> getAllUsers() throws SQLException;
+    List<User> getGroupByLogins(String[] logins) throws SQLException;
 }

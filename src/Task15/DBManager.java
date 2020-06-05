@@ -1,18 +1,31 @@
 package Task15;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 
 /**
  * DBManager
+ * класс реализует сброс и инициализацию БД
  * created by Ksenya_Ushakova at 31.05.2020
  */
 public class DBManager {
+    /**
+     * Сброс и инициализация БД
+     * @param connection соединение с БД
+     */
+
     public static void renewDataBase(Connection connection){
         Savepoint first = null;
         Statement statement = null;
        try{
            statement = connection.createStatement();
-           connection.setAutoCommit(false);
+           connection.setAutoCommit(false);//ручное управление
+
+           //добавляем операции в батч
            statement.addBatch("USE my_blog");
            statement.addBatch("DROP TABLE IF EXISTS user_info, article, access_level, comment_info");
            statement.addBatch("CREATE TABLE user_info\n" +
@@ -22,15 +35,11 @@ public class DBManager {
                    ");");
            statement.addBatch("INSERT INTO user_info\n" +
                    "VALUES\n" +
-                   "('author_of_the_year','qwerty', 100);");
-           statement.addBatch("INSERT INTO user_info\n" +
-                   "VALUES\n" +
-                   "('experienced_progger','hackinganyway', 50);");
-           statement.addBatch("INSERT INTO user_info\n" +
-                   "VALUES\n" +
+                   "('author_of_the_year','qwerty', 100),\n" +
+                   "('experienced_progger','hackinganyway', 50), \n" +
                    "('beginner','l0alhf48xkv9', 0);");
 
-           first = connection.setSavepoint("first");
+           first = connection.setSavepoint("first");//savepoint после создания первой таблицы
 
            statement.addBatch("CREATE TABLE article\n" +
                    "(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,\n" +
@@ -60,12 +69,13 @@ public class DBManager {
                    "(content, author, source)\n" +
                    "VALUES\n" +
                    "('Author, I wrote about it yesterday', 'experienced_progger', 1);");
+
            statement.executeBatch();
-           connection.commit();
+           connection.commit();//ручное управление
        }catch (SQLException e){
             e.printStackTrace();
            try {
-               connection.rollback(first);
+               connection.rollback(first); //пытаемся откатиться к точке сохранения
                statement.executeBatch();
                connection.commit();
            } catch (SQLException e1){
