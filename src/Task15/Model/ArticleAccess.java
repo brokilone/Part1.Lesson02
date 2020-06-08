@@ -13,13 +13,12 @@ import java.util.List;
  * created by Ksenya_Ushakova at 31.05.2020
  */
 public enum ArticleAccess {
-    //открытый/ только для авторов(юзеры с рейтингом >=0)/ по списку
+    //открытый/ только для авторов(юзеры с рейтингом >=0)
 
     OPEN,
-    AVAILABLE_TO_AUTHORS,
-    AVAILABLE_TO_LIST;
+    AVAILABLE_TO_AUTHORS;
 
-    private List<User> list = new ArrayList<>();
+
 
     /**
      * Строковое представление полей объекта
@@ -32,8 +31,6 @@ public enum ArticleAccess {
                 return "open";
             case AVAILABLE_TO_AUTHORS:
                 return "available to authors";
-            case AVAILABLE_TO_LIST:
-                return "available to list";
         }
         return null;
     }
@@ -43,47 +40,15 @@ public enum ArticleAccess {
      * @param name - значение из БД
      * @return ArticleAccess
      */
-    public static ArticleAccess getByName(String name){
+    public static Task15.Model.ArticleAccess getByName(String name){
         switch (name) {
             case "open":
                 return OPEN;
             case "available to authors":
                 return AVAILABLE_TO_AUTHORS;
-            case "available to list":
-                return AVAILABLE_TO_LIST;
         }
         return null;
     }
 
-    /**
-     * Установка списка пользователей, имеющих доступ
-     * применимо к открытому доступу или доступу для авторов
-     * @throws SQLException
-     */
-    public void setList() throws SQLException {
-        switch (this) {
-            case OPEN:
-                list = new UserDaoImpl().getAllUsers();
-                break;
-            case AVAILABLE_TO_AUTHORS:
-                list = new UserDaoImpl().getAllAuthors();
-                break;
-        }
-    }
-
-    /**
-     /**
-     * Установка списка пользователей, имеющих доступ
-     * применимо к доступу по списку
-     * @param logins - массив логинов пользователей
-     * @throws SQLException
-     */
-    public void setList(String[] logins) throws SQLException {
-       if (this == AVAILABLE_TO_LIST)
-       list = new UserDaoImpl().getGroupByLogins(logins);
-    }
-    public List<User> getList(){
-        return list;
-    }
 
 }

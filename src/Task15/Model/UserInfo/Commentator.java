@@ -1,6 +1,7 @@
 package Task15.Model.UserInfo;
 
 import Task15.Model.Article;
+import Task15.Model.Comment;
 
 import java.sql.SQLException;
 import java.util.List;

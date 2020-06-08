@@ -3,15 +3,15 @@ package Task15.Dao.Article;
 import Task15.Dao.User.UserDaoImpl;
 import Task15.Model.Article;
 import Task15.Model.ArticleAccess;
-import Task15.Model.UserInfo.Comment;
-import Task15.Model.UserInfo.User;
+import Task15.Model.BlogException.ArticleNotFoundException;
 import Task15.Model.BlogException.UserNotFoundException;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,9 +23,15 @@ import java.util.Optional;
 public class ArticleDaoImpl implements ArticleDao {
     private static final ConnectionManager connectionManager =
             ConnectionManagerJdbcImpl.getInstance();
+    private UserDaoImpl userDao;
+
+    public ArticleDaoImpl(UserDaoImpl userDao) {
+        this.userDao = userDao;
+    }
 
     /**
      * Метод для добавления в БД новой статьи
+     *
      * @param article
      * @return int - id статьи
      * @throws SQLException
@@ -53,6 +59,7 @@ public class ArticleDaoImpl implements ArticleDao {
 
     /**
      * Получение статьи из БД по id
+     *
      * @param id - id статьи
      * @return опционал объекта Article
      * @throws SQLException
@@ -71,7 +78,7 @@ public class ArticleDaoImpl implements ArticleDao {
                         resultSet.getInt(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
-                        new UserDaoImpl().getByLogin(resultSet.getString(4))
+                        userDao.getByLogin(resultSet.getString(4))
                                 .orElseThrow(UserNotFoundException::new),
                         ArticleAccess.getByName(resultSet.getString(5))
                 );
@@ -83,6 +90,7 @@ public class ArticleDaoImpl implements ArticleDao {
 
     /**
      * Изменение статьи в БД
+     *
      * @param article статья
      * @throws SQLException
      */
@@ -104,6 +112,7 @@ public class ArticleDaoImpl implements ArticleDao {
 
     /**
      * Удаление статьи по id из БД
+     *
      * @param id - id статьи
      * @throws SQLException
      */
@@ -119,29 +128,58 @@ public class ArticleDaoImpl implements ArticleDao {
         }
     }
 
+
+
     /**
-     * Получение списка комментариев к статье
-     * @param article
-     * @return возвращает List
+     * Получение списка логинов пользователей, кому разрешен доступ
+     * @param article статья
+     * @return CashedRowSet
      * @throws SQLException
      */
     @Override
-    public List<Comment> getListOfComments(Article article) throws SQLException {
-        List<Comment> list = new ArrayList<>();
-        try (Connection connection = connectionManager.getConnection();
-             PreparedStatement preparedStatement =
-                     connection.prepareStatement("SELECT * FROM comment_info WHERE source = ?")) {
+    public CachedRowSet allowedUsers(Article article) throws SQLException {
+        switch (article.getAccess()) {
+            case OPEN:
+                return allUsersLogins();
+            case AVAILABLE_TO_AUTHORS:
+                return allAuthorsLogins();
+            default:
+                throw new ArticleNotFoundException("Unknown access level");
+        }
+    }
 
-            preparedStatement.setInt(1, article.getId());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                int id = resultSet.getInt(1);
-                String content = resultSet.getString(2);
-                String login = resultSet.getString(4);
-                User author = new UserDaoImpl().getByLogin(login).orElseThrow(UserNotFoundException::new);
-                list.add(new Comment(id, content, article, author));
-            }
-            return list;
+    /**
+     * Получение логинов всех зарегистрированных пользователей
+     * из БД
+     * @return CachedRowSet
+     * @throws SQLException
+     */
+
+    private CachedRowSet allUsersLogins() throws SQLException {
+        try (Connection connection = connectionManager.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT login FROM user_info");
+            RowSetFactory factory = RowSetProvider.newFactory();
+            CachedRowSet rowSet = factory.createCachedRowSet();
+            rowSet.populate(resultSet);
+            return rowSet;
+        }
+    }
+
+    /**
+     * Получение логинов всех пользователей с неотрицательным рейтингом
+     *  из БД
+     * @return CashedRowSet
+     * @throws SQLException
+     */
+    private CachedRowSet allAuthorsLogins() throws SQLException {
+        try (Connection connection = connectionManager.getConnection()) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT login FROM user_info WHERE rating >= 0");
+            RowSetFactory factory = RowSetProvider.newFactory();
+            CachedRowSet rowSet = factory.createCachedRowSet();
+            rowSet.populate(resultSet);
+            return rowSet;
         }
     }
 }

@@ -1,10 +1,9 @@
 package Task15.Dao.Article;
 
 import Task15.Model.Article;
-import Task15.Model.UserInfo.Comment;
 
+import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,5 +17,6 @@ public interface ArticleDao {
     Optional<Article> getById(int id) throws SQLException;
     void updateById(Article article) throws SQLException;
     void deleteById(int id) throws SQLException;
-    List<Comment> getListOfComments(Article article) throws SQLException;
+
+    CachedRowSet allowedUsers(Article article) throws SQLException;
 }

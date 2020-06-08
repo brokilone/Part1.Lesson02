@@ -9,7 +9,7 @@ import Task15.Dao.User.UserDaoImpl;
 import Task15.Model.Article;
 import Task15.Model.ArticleAccess;
 import Task15.Model.BlogException.*;
-import Task15.Model.UserInfo.Comment;
+import Task15.Model.Comment;
 import Task15.Model.UserInfo.User;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
@@ -28,6 +28,10 @@ import java.util.List;
 public class Main {
     private static final ConnectionManager connectionManager =
             ConnectionManagerJdbcImpl.getInstance();
+    private static UserDaoImpl userDao = new UserDaoImpl();
+    private static ArticleDaoImpl articleDao = new ArticleDaoImpl(userDao);
+    private static CommentDaoImpl commentDao = new CommentDaoImpl(articleDao);
+
 
     public static void main(String[] args) {
         try (Connection connection = connectionManager.getConnection()) {
@@ -57,27 +61,26 @@ public class Main {
      * @throws SQLException
      */
     private static void testUserDaoImpl() throws SQLException {
-        UserDao impl = new UserDaoImpl();
 
         //поиск по логину
-        User user = impl.getByLogin("experienced_progger")
+        User user = userDao.getByLogin("experienced_progger")
                 .orElseThrow(() -> new UserNotFoundException("Error: user not found or deleted"));
         System.out.println("Get data about experienced_progger:");
         System.out.println(user);
 
         //добавление нового юзера
-        String login = impl.addUser(new User("unknown_spy", "neverguess", -10));
+        String login = userDao.addUser(new User("unknown_spy", "neverguess", -10));
         System.out.println("Add new user with login: " + login);
 
         //удаление по логину
-        impl.deleteByLogin("unknown_spy");
+        userDao.deleteByLogin("unknown_spy");
         System.out.println("Successfully deleted user with login 'unknown_spy'");
 
         //обновление рейтинга по логину
-        impl.updateByLogin(new User("beginner", "needchange", 20));
+        userDao.updateByLogin(new User("beginner", "needchange", 20));
 
         System.out.println("Successfully updated user with login 'beginner'");
-        System.out.println("Current rating: " + impl.getByLogin("beginner")
+        System.out.println("Current rating: " + userDao.getByLogin("beginner")
                 .orElseThrow(() -> new UserNotFoundException("Error: user not found or deleted"))
                 .getRating());
 
@@ -90,30 +93,30 @@ public class Main {
      * @throws SQLException
      */
     private static void testArticleDaoImpl() throws SQLException {
-        ArticleDao impl = new ArticleDaoImpl();
 
         //получаем статью по id
-        Article article = impl.getById(1).orElseThrow(() ->
+        Article article = articleDao.getById(1).orElseThrow(() ->
                 new ArticleNotFoundException("Error: article not found or deleted"));
         System.out.println("Get data about first article");
         System.out.println(article);
+        System.out.println("Allowed users: " + article.getListOfAllowedUsers());
 
         //заносим в БД новую стать.
         Article article2 = new Article(0, "Second article", "I don't know how to write articles",
                 article.getAuthor(), ArticleAccess.AVAILABLE_TO_AUTHORS);
-        int id = impl.addArticle(article2);
+        int id = articleDao.addArticle(article2);
         article2.setId(id);
         System.out.println("Add new article with id = " + id);
 
         //удаляем статью по id
-        impl.deleteById(2);
+        articleDao.deleteById(2);
         System.out.println("Successfully deleted article with id = 2");
 
         //редактируем статью в БД (меняем доступ)
-        article.setAccess(ArticleAccess.AVAILABLE_TO_LIST);
-        impl.updateById(article);
+        article.setAccess(ArticleAccess.OPEN);
+        articleDao.updateById(article);
         System.out.println("Successfully updated article with id = 1");
-        System.out.println("Current access level: " + impl.getById(1)
+        System.out.println("Current access level: " + articleDao.getById(1)
                 .orElseThrow(() -> new ArticleNotFoundException("Error: article not found or deleted"))
                 .getAccess());
 
@@ -128,32 +131,31 @@ public class Main {
      * @throws SQLException
      */
     private static void testCommentDaoImpl() throws SQLException {
-        CommentDao impl = new CommentDaoImpl();
 
         //получение комментария по id
-        Comment comment = impl.getCommentById(1)
+        Comment comment = commentDao.getCommentById(1)
                 .orElseThrow(() -> new CommentNotFoundException("Error: comment not found or deleted"));
         System.out.println("Get data about first comment:");
         System.out.println(comment);
 
         //добавление нового коммента в БД
-        Comment comment2 = new Comment(0, "Where is moderator?", new ArticleDaoImpl().getById(1).
+        Comment comment2 = new Comment(0, "Where is moderator?", articleDao.getById(1).
                 orElseThrow(() -> new ArticleNotFoundException("Arror: article not found or deleted")),
-                new UserDaoImpl().getByLogin("author_of_the_year")
+                userDao.getByLogin("author_of_the_year")
                         .orElseThrow(() -> new UserNotFoundException("Error: user not found or deleted")));
-        int id = impl.addComment(comment2);
+        int id = commentDao.addComment(comment2);
         comment2.setId(id);
         System.out.println("Add new comment with id = " + id);
 
         //удаление комментария по id
-        impl.deleteCommentById(1);
+        commentDao.deleteCommentById(1);
         System.out.println("Successfully deleted comment with id = 1");
 
         //изменение комментария (меняем текст)
         comment2.setContent("Boring...");
-        impl.updateCommentById(comment2);
+        commentDao.updateCommentById(comment2);
         System.out.println("Successfully updated comment with id = 2");
-        System.out.println("Current text: " + impl.getCommentById(2)
+        System.out.println("Current text: " + commentDao.getCommentById(2)
                 .orElseThrow(() -> new CommentNotFoundException("Error: comment not found or deleted"))
                 .getContent());
 
@@ -170,7 +172,6 @@ public class Main {
 
         //добавляем пользователя с неотрицательным рейтингом
         User indus = new User("indian_progger", "trytoencrypt", 0);
-        UserDao userDao = new UserDaoImpl();
         String login = userDao.addUser(indus);
         System.out.println("Successfully added user with login: " + login);
 
@@ -189,7 +190,7 @@ public class Main {
         }
 
         //юзер пишет комментарий
-        int commentId = indus.writeComment(new ArticleDaoImpl().getById(id)
+        int commentId = indus.writeComment(articleDao.getById(id)
                         .orElseThrow(() -> new ArticleNotFoundException("Error: article not found or deleted")),
                 "Did anybody read it?");
 
@@ -202,7 +203,7 @@ public class Main {
         indus.editArticle(id, "Never read it", ArticleAccess.AVAILABLE_TO_AUTHORS);
 
         System.out.println("After edit: ");
-        System.out.println("Text: " + new ArticleDaoImpl().getById(id)
+        System.out.println("Text: " + articleDao.getById(id)
                 .orElseThrow(() -> new ArticleNotFoundException("Error: article not found or deleted"))
                 .getContent());
 

@@ -1,10 +1,13 @@
 package Task15.Model;
 
 import Task15.Dao.Article.ArticleDaoImpl;
-import Task15.Model.UserInfo.Comment;
+import Task15.Dao.Comment.CommentDaoImpl;
+import Task15.Dao.User.UserDaoImpl;
 import Task15.Model.UserInfo.User;
 
+import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,14 +22,8 @@ public class Article {
     private User author;
     private ArticleAccess access;
 
-    public Article(int id, String title, User author, ArticleAccess access) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.access = access;
-    }
 
-    public Article(int id, String title, String content, User author, ArticleAccess access) {
+    public Article(int id, String title, String content, User author, ArticleAccess access)  {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -104,7 +101,7 @@ public class Article {
      * @throws SQLException
      */
     public List<Comment> getListOfComments() throws SQLException {
-        return new ArticleDaoImpl().getListOfComments(this);
+        return new CommentDaoImpl(new ArticleDaoImpl(new UserDaoImpl())).getListOfComments(this);
     }
 
     /**
@@ -120,5 +117,20 @@ public class Article {
                 ", author=" + author +
                 ", access=" + access +
                 '}';
+    }
+
+
+    /**
+     * Получение пользователей, имеющих доступ к статье, исходя из установленного
+     * уровня доступа
+     * @return List
+     */
+    public List<String> getListOfAllowedUsers() throws SQLException {
+        List<String> list = new ArrayList<>();
+        CachedRowSet rowSet = new ArticleDaoImpl(new UserDaoImpl()).allowedUsers(this);
+        while (rowSet.next()){
+            list.add(rowSet.getString(1));
+        }
+        return list;
     }
 }

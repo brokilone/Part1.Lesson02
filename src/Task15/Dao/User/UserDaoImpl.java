@@ -4,7 +4,7 @@ import Task15.Dao.Article.ArticleDaoImpl;
 import Task15.Model.Article;
 import Task15.Model.ArticleAccess;
 import Task15.Model.BlogException.ArticleNotFoundException;
-import Task15.Model.UserInfo.Comment;
+import Task15.Model.Comment;
 import Task15.Model.UserInfo.User;
 import Task15.Model.BlogException.UserNotFoundException;
 import Task15.connection.ConnectionManager;
@@ -12,7 +12,6 @@ import Task15.connection.ConnectionManagerJdbcImpl;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,7 +60,7 @@ public class UserDaoImpl implements UserDao {
             preparedStatement.setString(1,login);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-               user =  new User(
+                user =  new User(
                         resultSet.getString(1),
                         resultSet.getString(2),
                         resultSet.getInt(3)
@@ -172,78 +171,8 @@ public class UserDaoImpl implements UserDao {
                 int id = resultSet.getInt(1);
                 String content = resultSet.getString(2);
                 int articleId  = resultSet.getInt(4);
-                Article article = new ArticleDaoImpl().getById(articleId).orElseThrow(ArticleNotFoundException::new);
+                Article article = new ArticleDaoImpl(this).getById(articleId).orElseThrow(ArticleNotFoundException::new);
                 list.add(new Comment(id,content,article,user));
-            }
-            return list;
-        }
-    }
-
-    /**
-     * Метод получает список всех пользователей с неотрицательным рейтингом
-     * @return List
-     * @throws SQLException
-     */
-    @Override
-    public List<User> getAllAuthors() throws SQLException {
-        List<User> list = new ArrayList<>();
-        try (Connection connection = connectionManager.getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM user_info WHERE rating >= 0");
-            if (resultSet.next()) {
-                list.add(new User(
-                        resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getInt(3)
-                ));
-            }
-            return list;
-        }
-    }
-
-    /**
-     * Метод получает список всех зарегистрированных пользоваталей
-     * @return List
-     * @throws SQLException
-     */
-    @Override
-    public List<User> getAllUsers() throws SQLException {
-        List<User> list = new ArrayList<>();
-        try (Connection connection = connectionManager.getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM user_info");
-            if (resultSet.next()) {
-                list.add(new User(
-                        resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getInt(3)
-                ));
-            }
-            return list;
-        }
-    }
-
-    /**
-     * Метод получает список всех пользователей согласно указанному перечню логинов
-     * @param logins - логины
-     * @return List
-     * @throws SQLException
-     */
-    @Override
-    public List<User> getGroupByLogins(String[] logins) throws SQLException {
-        List<User> list = new ArrayList<>();
-        try (Connection connection = connectionManager.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM user_info WHERE login IN (?)");
-            String allLogins = Arrays.toString(logins);
-            statement.setString(1, allLogins.substring(1 ,allLogins.length()-1));
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                list.add(new User(
-                        resultSet.getString(1),
-                        resultSet.getString(2),
-                        resultSet.getInt(3)
-                ));
             }
             return list;
         }

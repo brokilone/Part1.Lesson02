@@ -1,7 +1,7 @@
 package Task15.Dao.User;
 
 import Task15.Model.Article;
-import Task15.Model.UserInfo.Comment;
+import Task15.Model.Comment;
 import Task15.Model.UserInfo.User;
 
 import java.sql.SQLException;
@@ -24,8 +24,4 @@ public interface UserDao {
 
     List<Article> getAllArticles(User user) throws SQLException;
     List<Comment> getAllComments(User user) throws SQLException;
-
-    List<User> getAllAuthors() throws SQLException;
-    List<User> getAllUsers() throws SQLException;
-    List<User> getGroupByLogins(String[] logins) throws SQLException;
 }

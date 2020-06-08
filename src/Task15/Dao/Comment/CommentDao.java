@@ -1,8 +1,10 @@
 package Task15.Dao.Comment;
 
-import Task15.Model.UserInfo.Comment;
+import Task15.Model.Article;
+import Task15.Model.Comment;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -20,4 +22,6 @@ public interface CommentDao {
     void updateCommentById(Comment comment) throws SQLException;
 
     void deleteCommentById(int id) throws SQLException;
+
+    List<Comment> getListOfComments(Article article) throws SQLException;
 }

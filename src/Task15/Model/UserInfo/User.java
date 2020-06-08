@@ -11,6 +11,7 @@ import Task15.Model.ArticleAccess;
 import Task15.Model.BlogException.ArticleNotFoundException;
 import Task15.Model.BlogException.AuthorImplementException;
 import Task15.Model.BlogException.CommentNotFoundException;
+import Task15.Model.Comment;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -74,7 +75,7 @@ public class User implements Author, Commentator {
 
         if (isAuthor()) { //проверка доступа к функционалу
             Article article = new Article(0, title, content, this, access);
-            int id = new ArticleDaoImpl().addArticle(article);
+            int id = new ArticleDaoImpl(new UserDaoImpl()).addArticle(article);
             article.setId(id);
             return id;
         } else {
@@ -82,30 +83,6 @@ public class User implements Author, Commentator {
         }
     }
 
-    /**
-     * Создание пользователем новой статьи с занесением записи в БД с доступом по списку
-     *
-     * @param title   - заголовок
-     * @param content - текст статьи
-     * @param access  - уровень доступа
-     * @param logins  - перечень пользователей, кому разрешен доступ
-     * @return id статьи
-     * @throws SQLException
-     */
-    @Override
-    public int writeArticle(String title, String content, ArticleAccess access, String[] logins) throws SQLException {
-        if (isAuthor()) {
-            if (access != ArticleAccess.AVAILABLE_TO_LIST) {
-                return writeArticle(title, content, access);
-            }
-            Article article = new Article(0, title, content, this, access);
-            int id = new ArticleDaoImpl().addArticle(article);
-            article.setId(id);
-            access.setList(logins);
-            return id;
-        } else throw new AuthorImplementException("A positive rating is required to access author features");
-
-    }
 
     /**
      * Изменение статьи в БД
@@ -119,7 +96,7 @@ public class User implements Author, Commentator {
     public void editArticle(int id, String content, ArticleAccess access) throws SQLException {
 
         if (isAuthor()) { //проверка доступа к функционалу, при негативном рейтинге запрет на редактирование статьи
-            ArticleDao articleDao = new ArticleDaoImpl();
+            ArticleDao articleDao = new ArticleDaoImpl(new UserDaoImpl());
             Article article = articleDao.getById(id).orElseThrow(ArticleNotFoundException::new);
             if (article.getAuthor().login.equals(this.login)) {//проверка, не чужую ли статью редактируем
                 article.setContent(content);
@@ -141,7 +118,7 @@ public class User implements Author, Commentator {
      */
     @Override
     public void deleteArticle(int id) throws SQLException {
-        ArticleDao articleDao = new ArticleDaoImpl();
+        ArticleDao articleDao = new ArticleDaoImpl(new UserDaoImpl());
         Article article = articleDao.getById(id).orElseThrow(ArticleNotFoundException::new);
         if (article.getAuthor().login.equals(this.login)) {//проверка, не чужую ли статью редактируем
             articleDao.deleteById(id);//проверка, не чужую ли статью удаляем
@@ -174,7 +151,7 @@ public class User implements Author, Commentator {
     @Override
     public int writeComment(Article article, String content) throws SQLException {
         Comment comment = new Comment(0, content, article, this);
-        int id = new CommentDaoImpl().addComment(comment);
+        int id = new CommentDaoImpl(new ArticleDaoImpl(new UserDaoImpl())).addComment(comment);
         comment.setId(id);
         return id;
     }
@@ -188,7 +165,7 @@ public class User implements Author, Commentator {
      */
     @Override
     public void editComment(int id, String content) throws SQLException {
-        CommentDao commentDao = new CommentDaoImpl();
+        CommentDao commentDao = new CommentDaoImpl(new ArticleDaoImpl(new UserDaoImpl()));
         Comment comment = commentDao.getCommentById(id)
                 .orElseThrow(() -> new CommentNotFoundException("Error: comment not found or deleted"));
         if (comment.getAuthor().login.equals(login)) {//проверка доступа
@@ -209,7 +186,7 @@ public class User implements Author, Commentator {
      */
     @Override
     public void deleteComment(int id) throws SQLException {
-        CommentDao commentDao = new CommentDaoImpl();
+        CommentDao commentDao = new CommentDaoImpl(new ArticleDaoImpl(new UserDaoImpl()));
         Comment comment = commentDao.getCommentById(id)
                 .orElseThrow(() -> new CommentNotFoundException("Error: comment not found or deleted"));
         if (comment.getAuthor().login.equals(login)) {//проверка доступа
@@ -230,7 +207,7 @@ public class User implements Author, Commentator {
      */
     @Override
     public void rateComment(int id, boolean up) throws SQLException {
-        User author = new CommentDaoImpl().getCommentById(id)
+        Task15.Model.UserInfo.User author = new CommentDaoImpl(new ArticleDaoImpl(new UserDaoImpl())).getCommentById(id)
                 .orElseThrow(() -> new CommentNotFoundException("Error: comment not found or deleted")).getAuthor();
         if (author.login.equals(login)) {//проверка, оценка собственных комментариев недопустима
             throw new AuthorImplementException("Access denied, it is not possible to manage your own rating");

@@ -14,7 +14,6 @@ import java.util.List;
 public interface Author {
 
     int writeArticle(String title, String content, ArticleAccess access) throws SQLException;
-    int writeArticle(String title, String content, ArticleAccess access, String[] logins) throws SQLException;
     void editArticle(int id, String content, ArticleAccess access) throws SQLException;
     void deleteArticle(int id) throws SQLException;
 
