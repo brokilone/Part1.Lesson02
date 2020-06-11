@@ -1,17 +1,17 @@
-package Task15.Model.UserInfo;
+package Task15.model.UserInfo;
 
-import Task15.Dao.Article.ArticleDao;
-import Task15.Dao.Article.ArticleDaoImpl;
-import Task15.Dao.Comment.CommentDao;
-import Task15.Dao.Comment.CommentDaoImpl;
-import Task15.Dao.User.UserDao;
-import Task15.Dao.User.UserDaoImpl;
-import Task15.Model.Article;
-import Task15.Model.ArticleAccess;
-import Task15.Model.BlogException.ArticleNotFoundException;
-import Task15.Model.BlogException.AuthorImplementException;
-import Task15.Model.BlogException.CommentNotFoundException;
-import Task15.Model.Comment;
+import Task15.dao.article.ArticleDao;
+import Task15.dao.article.ArticleDaoImpl;
+import Task15.dao.comment.CommentDao;
+import Task15.dao.comment.CommentDaoImpl;
+import Task15.dao.user.UserDao;
+import Task15.dao.user.UserDaoImpl;
+import Task15.model.Article;
+import Task15.model.ArticleAccess;
+import Task15.model.BlogException.ArticleNotFoundException;
+import Task15.model.BlogException.AuthorImplementException;
+import Task15.model.BlogException.CommentNotFoundException;
+import Task15.model.Comment;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -136,8 +136,8 @@ public class User implements Author, Commentator {
      */
     @Override
     public List<Article> getAllArticles() throws SQLException {
-        UserDao userDao = new UserDaoImpl();
-        return userDao.getAllArticles(this);
+        ArticleDao articleDao = new ArticleDaoImpl(new UserDaoImpl());
+        return articleDao.getAllArticles(this);
     }
 
     /**
@@ -207,7 +207,7 @@ public class User implements Author, Commentator {
      */
     @Override
     public void rateComment(int id, boolean up) throws SQLException {
-        Task15.Model.UserInfo.User author = new CommentDaoImpl(new ArticleDaoImpl(new UserDaoImpl())).getCommentById(id)
+        Task15.model.UserInfo.User author = new CommentDaoImpl(new ArticleDaoImpl(new UserDaoImpl())).getCommentById(id)
                 .orElseThrow(() -> new CommentNotFoundException("Error: comment not found or deleted")).getAuthor();
         if (author.login.equals(login)) {//проверка, оценка собственных комментариев недопустима
             throw new AuthorImplementException("Access denied, it is not possible to manage your own rating");
@@ -230,8 +230,8 @@ public class User implements Author, Commentator {
      */
     @Override
     public List<Comment> getAllComments() throws SQLException {
-        UserDao userDao = new UserDaoImpl();
-        return userDao.getAllComments(this);
+        CommentDao commentDao = new CommentDaoImpl(new ArticleDaoImpl(new UserDaoImpl()));
+        return commentDao.getAllComments(this);
     }
 
     /**

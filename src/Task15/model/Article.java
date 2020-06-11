@@ -1,9 +1,10 @@
-package Task15.Model;
+package Task15.model;
 
-import Task15.Dao.Article.ArticleDaoImpl;
-import Task15.Dao.Comment.CommentDaoImpl;
-import Task15.Dao.User.UserDaoImpl;
-import Task15.Model.UserInfo.User;
+import Task15.dao.article.ArticleDaoImpl;
+import Task15.dao.comment.CommentDaoImpl;
+import Task15.dao.user.UserDao;
+import Task15.dao.user.UserDaoImpl;
+import Task15.model.UserInfo.User;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;

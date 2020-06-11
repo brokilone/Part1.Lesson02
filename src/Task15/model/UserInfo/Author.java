@@ -1,7 +1,7 @@
-package Task15.Model.UserInfo;
+package Task15.model.UserInfo;
 
-import Task15.Model.Article;
-import Task15.Model.ArticleAccess;
+import Task15.model.Article;
+import Task15.model.ArticleAccess;
 
 import java.sql.SQLException;
 import java.util.List;

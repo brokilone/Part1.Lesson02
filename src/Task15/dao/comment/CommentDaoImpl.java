@@ -1,12 +1,13 @@
-package Task15.Dao.Comment;
+package Task15.dao.comment;
 
-import Task15.Dao.Article.ArticleDao;
-import Task15.Dao.User.UserDaoImpl;
-import Task15.Model.Article;
-import Task15.Model.BlogException.ArticleNotFoundException;
-import Task15.Model.Comment;
-import Task15.Model.BlogException.UserNotFoundException;
-import Task15.Model.UserInfo.User;
+import Task15.dao.article.ArticleDao;
+import Task15.dao.article.ArticleDaoImpl;
+import Task15.dao.user.UserDaoImpl;
+import Task15.model.Article;
+import Task15.model.BlogException.ArticleNotFoundException;
+import Task15.model.Comment;
+import Task15.model.BlogException.UserNotFoundException;
+import Task15.model.UserInfo.User;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 
@@ -147,6 +148,31 @@ public class CommentDaoImpl implements CommentDao {
                 String login = resultSet.getString(4);
                 User author = new UserDaoImpl().getByLogin(login).orElseThrow(UserNotFoundException::new);
                 list.add(new Comment(id, content, article, author));
+            }
+            return list;
+        }
+    }
+
+    /**
+     * Возвращает список всех комментариев пользователя
+     * @param user - пользователь
+     * @return list
+     * @throws SQLException
+     */
+    @Override
+    public List<Comment> getAllComments(User user) throws SQLException {
+        List<Comment> list = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection()){
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement("SELECT * FROM comment_info WHERE author = ?");
+            preparedStatement.setString(1, user.getLogin());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                int id = resultSet.getInt(1);
+                String content = resultSet.getString(2);
+                int articleId  = resultSet.getInt(4);
+                Article article = new ArticleDaoImpl(new UserDaoImpl()).getById(articleId).orElseThrow(ArticleNotFoundException::new);
+                list.add(new Comment(id,content,article,user));
             }
             return list;
         }

@@ -1,16 +1,13 @@
 package Task15;
 
-import Task15.Dao.Article.ArticleDao;
-import Task15.Dao.Article.ArticleDaoImpl;
-import Task15.Dao.Comment.CommentDao;
-import Task15.Dao.Comment.CommentDaoImpl;
-import Task15.Dao.User.UserDao;
-import Task15.Dao.User.UserDaoImpl;
-import Task15.Model.Article;
-import Task15.Model.ArticleAccess;
-import Task15.Model.BlogException.*;
-import Task15.Model.Comment;
-import Task15.Model.UserInfo.User;
+import Task15.dao.article.ArticleDaoImpl;
+import Task15.dao.comment.CommentDaoImpl;
+import Task15.dao.user.UserDaoImpl;
+import Task15.model.Article;
+import Task15.model.ArticleAccess;
+import Task15.model.BlogException.*;
+import Task15.model.Comment;
+import Task15.model.UserInfo.User;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
 
@@ -113,7 +110,7 @@ public class Main {
         System.out.println("Successfully deleted article with id = 2");
 
         //редактируем статью в БД (меняем доступ)
-        article.setAccess(ArticleAccess.OPEN);
+        article.setAccess(ArticleAccess.AVAILABLE_TO_AUTHORS);
         articleDao.updateById(article);
         System.out.println("Successfully updated article with id = 1");
         System.out.println("Current access level: " + articleDao.getById(1)

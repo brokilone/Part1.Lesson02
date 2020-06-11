@@ -1,7 +1,6 @@
-package Task15.Model;
+package Task15.model;
 
-import Task15.Model.Article;
-import Task15.Model.UserInfo.User;
+import Task15.model.UserInfo.User;
 
 /**
  * Comment

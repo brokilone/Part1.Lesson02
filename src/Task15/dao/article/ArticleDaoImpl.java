@@ -1,17 +1,20 @@
-package Task15.Dao.Article;
+package Task15.dao.article;
 
-import Task15.Dao.User.UserDaoImpl;
-import Task15.Model.Article;
-import Task15.Model.ArticleAccess;
-import Task15.Model.BlogException.ArticleNotFoundException;
-import Task15.Model.BlogException.UserNotFoundException;
+import Task15.dao.user.UserDaoImpl;
+import Task15.model.Article;
+import Task15.model.ArticleAccess;
+import Task15.model.BlogException.ArticleNotFoundException;
+import Task15.model.BlogException.UserNotFoundException;
 import Task15.connection.ConnectionManager;
 import Task15.connection.ConnectionManagerJdbcImpl;
+import Task15.model.UserInfo.User;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -180,6 +183,31 @@ public class ArticleDaoImpl implements ArticleDao {
             CachedRowSet rowSet = factory.createCachedRowSet();
             rowSet.populate(resultSet);
             return rowSet;
+        }
+    }
+
+    /**
+     * Метод возвращает список всех статей пользователя
+     * @param user пользователь
+     * @return List
+     * @throws SQLException
+     */
+    @Override
+    public List<Article> getAllArticles(User user) throws SQLException {
+        List<Article> list = new ArrayList<>();
+        try (Connection connection = connectionManager.getConnection()){
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement("SELECT * FROM article WHERE author = ?");
+            preparedStatement.setString(1, user.getLogin());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                int id = resultSet.getInt(1);
+                String title = resultSet.getString(2);
+                String content = resultSet.getString(3);
+                ArticleAccess access = ArticleAccess.getByName(resultSet.getString(5));
+                list.add(new Article(id,title,content,user,access));
+            }
+            return list;
         }
     }
 }

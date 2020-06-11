@@ -1,11 +1,4 @@
-package Task15.Model;
-
-import Task15.Dao.User.UserDaoImpl;
-import Task15.Model.UserInfo.User;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+package Task15.model;
 
 /**
  * ArticleAccess
@@ -40,7 +33,7 @@ public enum ArticleAccess {
      * @param name - значение из БД
      * @return ArticleAccess
      */
-    public static Task15.Model.ArticleAccess getByName(String name){
+    public static Task15.model.ArticleAccess getByName(String name){
         switch (name) {
             case "open":
                 return OPEN;

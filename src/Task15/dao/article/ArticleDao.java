@@ -1,9 +1,11 @@
-package Task15.Dao.Article;
+package Task15.dao.article;
 
-import Task15.Model.Article;
+import Task15.model.Article;
+import Task15.model.UserInfo.User;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -17,6 +19,6 @@ public interface ArticleDao {
     Optional<Article> getById(int id) throws SQLException;
     void updateById(Article article) throws SQLException;
     void deleteById(int id) throws SQLException;
-
+    List<Article> getAllArticles(User user) throws SQLException;
     CachedRowSet allowedUsers(Article article) throws SQLException;
 }

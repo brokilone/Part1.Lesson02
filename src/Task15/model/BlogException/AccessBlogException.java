@@ -1,4 +1,4 @@
-package Task15.Model.BlogException;
+package Task15.model.BlogException;
 
 /**
  * AccessBlogException

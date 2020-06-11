@@ -1,8 +1,8 @@
-package Task15.Dao.User;
+package Task15.dao.user;
 
-import Task15.Model.Article;
-import Task15.Model.Comment;
-import Task15.Model.UserInfo.User;
+import Task15.model.Article;
+import Task15.model.Comment;
+import Task15.model.UserInfo.User;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,6 +22,4 @@ public interface UserDao {
 
     boolean isAuthor(User user) throws SQLException;
 
-    List<Article> getAllArticles(User user) throws SQLException;
-    List<Comment> getAllComments(User user) throws SQLException;
 }
