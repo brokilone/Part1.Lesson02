@@ -31,14 +31,17 @@
     <Loggers>
         #Root logger
         <Root level="TRACE">
-            <AppenderRef ref="CONSOLE"/>
+            <appender-ref ref="CONSOLE"/>
         </Root>
         #Business logger
-        <Logger name="Task16.model.userInfo.User" level="INFO" additivity="false">
+        <Logger name="Task16.dao.user.UserDaoImpl" level="INFO" additivity="false">
             <appender-ref ref="DBLOG" level = "INFO" />
         </Logger>
         #Security logger
-        <Logger name="Task16.model.userInfo.User" level="INFO" additivity="false">
+        <Logger name="Task16.dao.article.ArticleDaoImpl" level="INFO" additivity="false">
+            <appender-ref ref="FILELOGGER" level = "INFO" />
+        </Logger>
+        <Logger name="Task16.dao.comment.CommentDaoImpl" level="INFO" additivity="false">
             <appender-ref ref="FILELOGGER" level = "INFO" />
         </Logger>
     </Loggers>
