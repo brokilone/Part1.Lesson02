@@ -14,8 +14,7 @@ bin/
 
 ### Java ###
 target/
-/logs/
-*.log
+
 out/
 build/
 .gradle/
