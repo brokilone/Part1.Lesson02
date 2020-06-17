@@ -1,0 +1,27 @@
+[INFO ] 2020-06-15 09:47:31.478 [main] ArticleDaoImpl - Get article by id: 1
+[INFO ] 2020-06-15 09:47:31.547 [main] ArticleDaoImpl - Add new article: Article{id=0, title='Second article', content='I don't know how to write articles', author=User{login='beginner', password='needchange', rating=20}, access=available to authors}
+[INFO ] 2020-06-15 09:47:31.594 [main] ArticleDaoImpl - Delete article by id: 2
+[INFO ] 2020-06-15 09:47:31.710 [main] ArticleDaoImpl - Update article: Article{id=1, title='First article', content='I have a string and I want to find the first 
+character which occurs only once, in this string I have 2 characters 
+which occurs only once which is a space and a hyphen but the first 
+character is space so I want to return that from a method.', author=User{login='beginner', password='needchange', rating=20}, access=available to authors}
+[INFO ] 2020-06-15 09:47:31.911 [main] ArticleDaoImpl - Get article by id: 1
+[INFO ] 2020-06-15 09:47:32.096 [main] ArticleDaoImpl - Get article by id: 1
+[INFO ] 2020-06-15 09:47:32.212 [main] CommentDaoImpl - Get comment by id: 1
+[INFO ] 2020-06-15 09:47:32.312 [main] ArticleDaoImpl - Get article by id: 1
+[INFO ] 2020-06-15 09:47:32.512 [main] CommentDaoImpl - Add new comment Comment{id=0, content='Where is moderator?', source=Article{id=1, title='First article', content='I have a string and I want to find the first 
+character which occurs only once, in this string I have 2 characters 
+which occurs only once which is a space and a hyphen but the first 
+character is space so I want to return that from a method.', author=User{login='beginner', password='needchange', rating=20}, access=available to authors}, author=User{login='author_of_the_year', password='qwerty', rating=100}}
+[INFO ] 2020-06-15 09:47:32.613 [main] CommentDaoImpl - Delete comment by id: 1
+[INFO ] 2020-06-15 09:47:32.697 [main] CommentDaoImpl - Update comment: Comment{id=2, content='Boring...', source=Article{id=1, title='First article', content='I have a string and I want to find the first 
+character which occurs only once, in this string I have 2 characters 
+which occurs only once which is a space and a hyphen but the first 
+character is space so I want to return that from a method.', author=User{login='beginner', password='needchange', rating=20}, access=available to authors}, author=User{login='author_of_the_year', password='qwerty', rating=100}}
+[INFO ] 2020-06-15 09:47:32.936 [main] ArticleDaoImpl - Get article by id: 1
+[INFO ] 2020-06-15 09:47:33.071 [main] CommentDaoImpl - Get comment by id: 2
+[INFO ] 2020-06-15 09:47:33.252 [main] ArticleDaoImpl - Add new article: Article{id=0, title='Lorem', content='Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.', author=User{login='indian_progger', password='trytoencrypt', rating=0}, access=open}
+[INFO ] 2020-06-15 09:47:33.252 [main] ArticleDaoImpl - Get all articles by user: User{login='indian_progger', password='trytoencrypt', rating=0}
+[INFO ] 2020-06-15 09:47:33.330 [main] CommentDaoImpl - Add new comment Comment{id=0, content='Did anybody read it?', source=Article{id=3, title='Lorem', content='Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.', author=User{login='indian_progger', password='trytoencrypt', rating=0}, access=open}, author=User{login='indian_progger', password='trytoencrypt', rating=0}}
+[INFO ] 2020-06-15 09:47:33.553 [main] ArticleDaoImpl - Get article by id: 3
+[INFO ] 2020-06-15 09:47:33.631 [main] CommentDaoImpl - Get comment by id: 3
